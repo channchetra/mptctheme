@@ -10,7 +10,13 @@ class App extends Controller
     {
         return get_bloginfo('name');
     }
-
+    public function logoUrl()
+    {
+        if (has_custom_logo()) {
+            $logo_img = wp_get_attachment_image_src(get_theme_mod('custom_logo'), 'full');
+            return $logo_img[0];
+        }
+    }
     public static function title()
     {
         if (is_home()) {

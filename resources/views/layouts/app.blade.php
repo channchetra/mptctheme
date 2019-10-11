@@ -4,21 +4,30 @@
   <body @php body_class() @endphp>
     @php do_action('get_header') @endphp
     <div class="wrapper">
-        @include( 'partials.header-mobile')
+        @include('partials.header-mobile')
         @include('partials.header')
-      <div class="content">
-        <main class="main">
-          @yield('content')
-        </main>
+        @include('partials.marquee')
+        <div class="content">
+          <div class="container plr-lg-30">
+            <div class="row">
+              <div class="col-lg-8">
+                <div class="detail-wrap">
+                <main class="main">
+                  @yield('content')
+                </main>
+                </div>
+              </div>
+            </div>
+          </div>
         @if (App\display_sidebar())
           <aside class="sidebar">
             @include('partials.sidebar')
           </aside>
         @endif
-      </div>
+        </div><!--End of Body Class Content -->
     @php do_action('get_footer') @endphp
     @include('partials.footer')
-    </div>
+    </div><!--End of Wrapper -->
     @php wp_footer() @endphp
   </body>
 </html>

@@ -2,7 +2,7 @@
     <div class="nav-sidebar-header">
         <!-- mobile Royal Cambodia logo & title -->
         <!--img class="khmer-logo" src="src/sass/images/khmer-logo.png" /-->
-        <object class="khmer-logo" class="d-inline-block" type="image/svg+xml" data="src/sass/images/Royal_Cambodia.svg" width="" height=""></object>
+        <object class="khmer-logo" class="d-inline-block" type="image/svg+xml" data="@asset(src/sass/images/Royal_Cambodia.svg)" width="" height=""></object>
         <h1 class="font-moul khmer-title primary-color">ព្រះរាជាណាចក្រកម្ពុជា <br/>ជាតិ សាសនា ព្រះមហាក្សត្រ</h1>
         <!-- mobile search form -->
         <form class="form-inline">
@@ -21,12 +21,9 @@
             </ul>
         </div>
         <!-- mobile top menu bar -->
-        <ul class="short-link">
-            <li><a class="primary-color" href="#">ជជែកផ្ទាល់</a></li>
-            <li><a class="primary-color" href="#">ទំនាក់ទំនង</a></li>
-            <li><a class="primary-color" href="#">ផ្តល់មតិយោបល់</a></li>
-            <li><a class="primary-color" href="#">សំនួរ ចម្លើយ</a></li>
-        </ul>
+        @if (has_nav_menu('primary_navigation'))
+            {!! wp_nav_menu(['theme_location' => 'top_navigation', 'container' => 'nav', 'container_class' => 'short-link']) !!}
+        @endif
     </div>
     <!-- mobile main navigation -->
     <nav class="collapse-navbar sm-navbar">
