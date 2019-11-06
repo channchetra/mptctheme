@@ -20,14 +20,19 @@
             </div>
           </div>
         @if (App\display_sidebar())
-          <aside class="sidebar">
+          <div class="col-lg-4 sidebar">
             @include('partials.sidebar')
-          </aside>
+          </div>
         @endif
-        </div><!--End of Body Class Content -->
+        </div>
+        <!--End of Body Class Content -->
     @php do_action('get_footer') @endphp
-    @include('partials.footer')
-    </div><!--End of Wrapper -->
+        <div class="content">
+          @include('partials.footer')
+          @include('partials.responsive-switcher')
+        </div>
+    </div>
+    <!--End of Wrapper -->
     @php wp_footer() @endphp
   </body>
 </html>
