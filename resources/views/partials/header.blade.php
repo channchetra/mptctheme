@@ -27,9 +27,13 @@
           </div>
           <!-- desktop Cambodia sign -->
           <div class="col-5 logo-wrap text-right">
+            <!-- desktop top menu -->
+            @if (has_nav_menu('primary_navigation'))
+              {!! wp_nav_menu(['theme_location' => 'top_navigation', 'container' => 'nav', 'container_class' => 'short-link mb-2']) !!}
+            @endif
             <!-- desktop Royal Cambodia logo -->
-            <h1 class="font-moul khmer-title primary-color inline-block">ព្រះរាជាណាចក្រកម្ពុជា <br/>ជាតិ សាសនា ព្រះមហាក្សត្រ</h1>
-            <br/>
+            <!-- h1 class="font-moul khmer-title primary-color inline-block">ព្រះរាជាណាចក្រកម្ពុជា <br/>ជាតិ សាសនា ព្រះមហាក្សត្រ</h1>
+            <br/ -->
             <!-- desktop search form -->
             <form class="form-inline inline-block">
               <div class="input-group input-group-sm mb-2">
@@ -46,10 +50,6 @@
                 <li><a href="#">Eng</a></li>
               </ul>
             </div>
-            <!-- desktop top menu -->
-              @if (has_nav_menu('primary_navigation'))
-                {!! wp_nav_menu(['theme_location' => 'top_navigation', 'container' => 'nav', 'container_class' => 'short-link']) !!}
-              @endif
           </div>
         </div>
       </div>

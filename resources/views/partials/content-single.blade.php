@@ -1,8 +1,9 @@
 <article @php post_class() @endphp>
-  <header>
-    <h1 class="entry-title">{!! get_the_title() !!}</h1>
+  <div class="mb-3"></div>
+  <div class="head">
+    <div class="title primary-color"><h4>{!! get_the_title() !!}<h4></div>
     @include('partials/entry-meta')
-  </header>
+  </div>
   <div class="entry-content">
     @php the_content() @endphp
   </div>

@@ -1,7 +1,7 @@
 <!doctype html>
 <html class="responsive" {!! get_language_attributes() !!}>
   @include('partials.head')
-  <body @php body_class() @endphp>
+  <body>
     @php do_action('get_header') @endphp
     <div class="wrapper">
         @include('partials.header-mobile')
@@ -12,18 +12,18 @@
             <div class="row">
               <div class="col-lg-8">
                 <div class="detail-wrap">
-                <main class="main">
-                  @yield('content')
-                </main>
+                  <main class="main">
+                    @yield('content')
+                  </main>
                 </div>
               </div>
+          @if (App\display_sidebar())
+            <div class="col-lg-4 sidebar">
+              @include('partials.sidebar')
+            </div>
+          @endif
             </div>
           </div>
-        @if (App\display_sidebar())
-          <div class="col-lg-4 sidebar">
-            @include('partials.sidebar')
-          </div>
-        @endif
         </div>
         <!--End of Body Class Content -->
     @php do_action('get_footer') @endphp
