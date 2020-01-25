@@ -7,6 +7,7 @@
         @include('partials.header-mobile')
         @include('partials.header')
         @include('partials.marquee')
+        @include('partials.breadcrum')
         <div class="content">
           <div class="container plr-lg-30">
             <div class="row">
