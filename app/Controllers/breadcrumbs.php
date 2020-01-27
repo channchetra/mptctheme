@@ -6,201 +6,148 @@ use Sober\Controller\Controller;
 
 class Breadcrumbs extends Controller
 {
+    // private method to get term parent as list code from:
+    // https://developer.wordpress.org/reference/functions/get_term_parents_list/
+
+    private static function getTermParentsList($term_id, $taxonomy, $args = array())
+    {
+        $list = '';
+        $term = get_term($term_id, $taxonomy);
+     
+        if (is_wp_error($term)) {
+            return $term;
+        }
+     
+        if (! $term) {
+            return $list;
+        }
+     
+        $term_id = $term->term_id;
+     
+        $defaults = array(
+            'format'    => 'name',
+            'separator' => '/',
+            'link'      => true,
+            'inclusive' => true,
+        );
+     
+        $args = wp_parse_args($args, $defaults);
+     
+        foreach (array( 'link', 'inclusive' ) as $bool) {
+            $args[ $bool ] = wp_validate_boolean($args[ $bool ]);
+        }
+     
+        $parents = get_ancestors($term_id, $taxonomy, 'taxonomy');
+     
+        if ($args['inclusive']) {
+            array_unshift($parents, $term_id);
+        }
+     
+        foreach (array_reverse($parents) as $term_id) {
+            $parent = get_term($term_id, $taxonomy);
+            $name   = ( 'slug' === $args['format'] ) ? $parent->slug : $parent->name;
+     
+            if ($args['link']) {
+                $list .= '<li><a href="' . esc_url(get_term_link($parent->term_id, $taxonomy)) . '">' . $name . '</a></li>';
+            } else {
+                $list .= '<li>' . $name . '</li>';
+            }
+        }
+     
+        return $list;
+    }
+
+
+    // Method ដំណើរការបង្កើត Breadcrumbs
     public static function mptcBreadcrumbs()
     {
-        // Set variables for later use
-        $home_link        = home_url('/');
-        $home_text        = __('ទំព័រដើម', 'sage');
-        $link_attr        = ' rel="v:url" property="v:title"';
-        $link             = '<a' . $link_attr . ' href="%1$s">%2$s</a>';
-        $delimiter        = '</li><li>';
-        $page_addon       = '';
-        $breadcrumb_trail = '';
-        $category_links   = '';
-    
-        /**
-         * Set our own $wp_the_query variable. Do not use the global variable version due to
-         * reliability
-         */
-        $wp_the_query   = $GLOBALS['wp_the_query'];
-        $queried_object = $wp_the_query->get_queried_object();
-    
-        // Handle single post requests which includes single pages, posts and attatchments
-        if (is_singular()) {
-            /**
-             * Set our own $post variable. Do not use the global variable version due to
-             * reliability. We will set $post_object variable to $GLOBALS['wp_the_query']
-             */
-            $post_object = sanitize_post($queried_object);
-    
-            // Set variables
-            $title          = apply_filters('the_title', $post_object->post_title);
-            $parent         = $post_object->post_parent;
-            $post_type      = $post_object->post_type;
-            $post_id        = $post_object->ID;
-            $post_link      = $title;
-            $parent_string  = '';
-            $post_type_link = '';
-    
-            if ('post' === $post_type) {
-                // Get the post categories
-                $categories = get_the_category($post_id);
-                if ($categories) {
-                    // Lets grab the first category
-                    $category  = $categories[0];
-    
-                    $category_links = get_category_parents($category, true, $delimiter);
-                    $category_links = str_replace('<a', '<a' . $link_attr, $category_links);
-                    $category_links = str_replace('</a>', '</a>', $category_links);
-                }
-            }
-    
-            if (!in_array($post_type, ['post', 'page', 'attachment'])) {
-                $post_type_object = get_post_type_object($post_type);
-                $archive_link     = esc_url(get_post_type_archive_link($post_type));
-                $post_type_link   = sprintf($link, $archive_link, $post_type_object->labels->singular_name);
-            }
-    
-            // Get post parents if $parent !== 0
-            if (0 !== $parent) {
-                $parent_links = [];
-                while ($parent) {
-                    $post_parent = get_post($parent);
-    
-                    $parent_links[] = sprintf($link, esc_url(get_permalink($post_parent->ID)), get_the_title($post_parent->ID));
-    
-                    $parent = $post_parent->post_parent;
-                }
-    
-                $parent_links = array_reverse($parent_links);
-    
-                $parent_string = implode($delimiter, $parent_links);
-            }
-    
-            // Lets build the breadcrumb trail
-            if ($parent_string) {
-                $breadcrumb_trail = $parent_string . $delimiter . $post_link;
-            } else {
-                $breadcrumb_trail = $post_link;
-            }
-    
-            if ($post_type_link) {
-                $breadcrumb_trail = $post_type_link . $delimiter . $breadcrumb_trail;
-            }
-                    
-            if ($category_links) {
-                $breadcrumb_trail = $category_links . $breadcrumb_trail;
-            }
-        }
-    
-        // Handle archives which includes category-, tag-, taxonomy-, date-, custom post type archives and author archives
-        if (is_archive()) {
-            if (is_category()
-                || is_tag()
-                || is_tax()
-            ) {
-                // Set the variables for this section
-                $term_object        = get_term($queried_object);
-                $taxonomy           = $term_object->taxonomy;
-                $term_id            = $term_object->term_id;
-                $current_term_link  = $term_object->name;
-                $term_parent        = $term_object->parent;
-                $taxonomy_object    = get_taxonomy($taxonomy);
-                $parent_term_string = '';
-    
-                if (0 !== $term_parent) {
-                    // Get all the current term ancestors
-                    $parent_term_links = [];
-                    while ($term_parent) {
-                        $term = get_term($term_parent, $taxonomy);
-    
-                        $parent_term_links[] = sprintf($link, esc_url(get_term_link($term)), $term->name);
-    
-                        $term_parent = $term->parent;
-                    }
-    
-                    $parent_term_links  = array_reverse($parent_term_links);
-                    $parent_term_string = implode($delimiter, $parent_term_links);
-                }
-    
-                if ($parent_term_string) {
-                    $breadcrumb_trail = $parent_term_string . $delimiter . $current_term_link;
-                } else {
-                    $breadcrumb_trail = $current_term_link;
-                }
-            } elseif (is_author()) {
-                $breadcrumb_trail = $queried_object->data->display_name;
-            } elseif (is_date()) {
-                // Set default variables
-                $year     = $wp_the_query->query_vars['year'];
-                $monthnum = $wp_the_query->query_vars['monthnum'];
-                $day      = $wp_the_query->query_vars['day'];
-    
-                // Get the month name if $monthnum has a value
-                if ($monthnum) {
-                    $date_time  = DateTime::createFromFormat('!m', $monthnum);
-                    $month_name = $date_time->format('F');
-                }
-    
-                if (is_year()) {
-                    $breadcrumb_trail = $year;
-                } elseif (is_month()) {
-                    $year_link        = sprintf($link, esc_url(get_year_link($year)), $year);
-    
-                    $breadcrumb_trail = $year_link . $delimiter . $month_name;
-                } elseif (is_day()) {
-                    $year_link        = sprintf($link, esc_url(get_year_link($year)), $year);
-                    $month_link       = sprintf($link, esc_url(get_month_link($year, $monthnum)), $month_name);
-    
-                    $breadcrumb_trail = $year_link . $delimiter . $month_link . $delimiter . $day;
-                }
-            } elseif (is_post_type_archive()) {
-                $post_type        = $wp_the_query->query_vars['post_type'];
-                $post_type_object = get_post_type_object($post_type);
-    
-                $breadcrumb_trail = $post_type_object->labels->singular_name;
-            }
-        }
-    
-        // Handle the search page
-        if (is_search()) {
-            $breadcrumb_trail = __('ស្វែងរកតាមពាក្យ : ', 'sage') . get_search_query();
-        }
-    
-        // Handle 404's
-        if (is_404()) {
-            $breadcrumb_trail = __('Error 404', 'sage');
-        }
-    
-        // Handle paged pages
-        if (is_paged()) {
-            $current_page = get_query_var('paged') ? get_query_var('paged') : get_query_var('page');
-            $page_addon   = sprintf(__(' ( ទំព័រទី %s )', 'sage'), number_format_i18n($current_page));
-        }
-    
-        $breadcrumb_output_link  = '';
-        if (is_home() || is_front_page()) {
-            // Do not show breadcrumbs on page one of home and frontpage
-            if (is_paged()) {
-                $breadcrumb_output_link .= '<li>';
-                $breadcrumb_output_link .= '<a href="' . $home_link . '">' . $home_text . '</a>';
-                $breadcrumb_output_link .= '</li>';
-                $breadcrumb_output_link .= '<li>';
-                $breadcrumb_output_link .= $page_addon;
-                $breadcrumb_output_link .= '</li>';
-            }
-        } else {
-            $breadcrumb_output_link .= '<li>';
-            $breadcrumb_output_link .= '<a href="' . $home_link . '" rel="v:url" property="v:title">' . $home_text . '</a>';
-            $breadcrumb_output_link .= '</li>';
-            $breadcrumb_output_link .= '<li>';
-            $breadcrumb_output_link .= $breadcrumb_trail;
-            $breadcrumb_output_link .= '</li>';
-        }
-        $breadcrumb_print_out = '<div class="container plr-lg-30"><div class="breadcrum"><ul>';
-        $breadcrumb_print_out .= $breadcrumb_output_link;
-        $breadcrumb_print_out .= '</ul></div></div>';
+            $delimiter = '&raquo;';
+            $name = __('ទំព័រដើម', 'sage');
+            $breadcrumb_output = '';
+            $currentBefore = '<span class="current">';
+            $currentAfter = '</span>';
+            
+        if (!is_home() && !is_front_page() || is_paged()) {
+            $breadcrumb_output .= '<ul>';
+            
+            global $post;
+            $home = get_bloginfo('url');
+            $breadcrumb_output .= '<li><a href="' . $home . '">' . $name . '</a></li>';
+            
+            if (is_category()) {
+                global $wp_query;
+                $cat_obj = $wp_query->get_queried_object();
+                $thisCat = $cat_obj->term_id;
+                $thisCat = get_category($thisCat);
+                $parentCat = get_category($thisCat->parent);
 
-        return $breadcrumb_print_out;
+                if ($thisCat->parent != 0) {
+                    $breadcrumb_output .= self::getTermParentsList($thisCat, 'category', array( 'inclusive' => false ));
+                }
+                $breadcrumb_output .= '<li><a href="'. esc_url(get_category_link($thisCat)) .'">';
+                $breadcrumb_output .= $thisCat->name;
+                $breadcrumb_output .= '</a></li>';
+            } elseif (is_day()) {
+                $breadcrumb_output .= '<li><a href="' . get_year_link(get_the_time('Y')) . '">' . get_the_time('Y') . '</a></li>';
+                $breadcrumb_output .= '<li><a href="' . get_month_link(get_the_time('Y'), get_the_time('m')) . '">' . get_the_time('F') . '</a></li>';
+                $breadcrumb_output .= '<li>' . get_the_time('d') . '</li>';
+            } elseif (is_month()) {
+                $breadcrumb_output .= '<li><a href="' . get_year_link(get_the_time('Y')) . '">' . get_the_time('Y') . '</a></li>';
+                $breadcrumb_output .= '<li><a href="' . get_month_link(get_the_time('Y'), get_the_time('m')) . '">' . get_the_time('F') . '</a></li>';
+            } elseif (is_year()) {
+                $breadcrumb_output .= '<li><a href="' . get_year_link(get_the_time('Y')) . '">' . get_the_time('Y') . '</a></li>';
+            } elseif (is_single() && !is_attachment()) {
+                $cat = get_the_category();
+                $cat = $cat[0];
+                $breadcrumb_output .= self::getTermParentsList($cat, 'category');
+            } elseif (is_attachment()) {
+                $parent = get_post($post->post_parent);
+                $cat = get_the_category($parent->ID);
+                $cat = $cat[0];
+                $breadcrumb_output .= self::getTermParentsList($cat, 'category');
+                $breadcrumb_output .= '<a href="' . get_permalink($parent) . '">' . mb_strimwidth($parent->post_title, 0, 50, '...') . '</a>';
+            } elseif (is_page() && !$post->post_parent) {
+                $breadcrumb_output .= '<li><a href="#">' . get_the_title() . '</a></li>';
+            } elseif (is_page() && $post->post_parent) {
+                $parent_id  = $post->post_parent;
+                $breadcrumbs = array();
+                while ($parent_id) {
+                    $page = get_page($parent_id);
+                    $breadcrumbs[] = '<li><a href="' . get_permalink($page->ID) . '">' . get_the_title($page->ID) . '</a></li>';
+                    $parent_id  = $page->post_parent;
+                }
+                    $breadcrumbs = array_reverse($breadcrumbs);
+                foreach ($breadcrumbs as $crumb) {
+                    $breadcrumb_output .= $crumb;
+                }
+                $breadcrumb_output .= '<li><a href="#">' . get_the_title() . '</a></li>';
+            } elseif (is_search()) {
+                $breadcrumb_output .= '<li>';
+                $breadcrumb_output .= __('លទ្ធផលស្វែងរកនៃពាក្យ៖ ', 'sage');
+                $breadcrumb_output .= get_search_query();
+                $breadcrumb_output .= '</li>';
+            } elseif (is_tag()) {
+                $breadcrumb_output .= '<li>';
+                $breadcrumb_output .= single_tag_title('', false);
+                $breadcrumb_output .= '</li>';
+            } elseif (is_author()) {
+                global $author;
+                $userdata = get_userdata($author);
+                $breadcrumb_output .= '<li>';
+                $breadcrumb_output .= __('អត្ថបទដែលបានបង្ហោះដោយ ៖ ', 'sage');
+                $breadcrumb_output .= $userdata->display_name;
+                $breadcrumb_output .= '</li>';
+            } elseif (is_404()) {
+                $breadcrumb_output .= '<li><a href="#">' . __('ទំព័រមានបញ្ហា', 'sage') . '</a></li>';
+            }
+            
+            if (get_query_var('paged')) {
+                $breadcrumb_output .= '<li>';
+                $breadcrumb_output .= __('ទំព័រទី៖', 'sage') . ' ' . get_query_var('paged');
+                $breadcrumb_output .= '</li>';
+            }
+                $breadcrumb_output .= '</ul>';
+                return $breadcrumb_output;
+        }
     }
 }

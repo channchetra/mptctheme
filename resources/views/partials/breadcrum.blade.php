@@ -1,3 +1,7 @@
 <div class="content">
-    {!! Breadcrumbs::mptcBreadcrumbs() !!}
+    <div class="container plr-lg-30">
+        <div class="breadcrum">
+            {!! Breadcrumbs::mptcBreadcrumbs() !!}
+        </div>
+    </div>
 </div>

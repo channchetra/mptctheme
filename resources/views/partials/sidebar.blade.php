@@ -1,4 +1,4 @@
-{{-- @php dynamic_sidebar('sidebar-primary') @endphp --}}
+@php dynamic_sidebar('sidebar-primary') @endphp
 <div class="block-title2 primary-color">
     <span class="primary-color">បណ្ណាល័យព័ត៌មាន</span>
 </div>

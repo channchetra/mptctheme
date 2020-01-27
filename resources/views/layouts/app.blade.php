@@ -13,9 +13,7 @@
             <div class="row">
               <div class="col-lg-8">
                 <div class="detail-wrap">
-                  <main class="main">
                     @yield('content')
-                  </main>
                 </div>
               </div>
           @if (App\display_sidebar())

@@ -36,4 +36,14 @@ class App extends Controller
         }
         return get_the_title();
     }
+
+    public static function mptcthumbnail($size = 'post-thumbnail')
+    {
+        if (has_post_thumbnail()) {
+            $url = get_the_post_thumbnail_url('', $size);
+        } else {
+            $url = \App\asset_path('images/'). $size.'.png';
+        }
+        return $url;
+    }
 }

@@ -21,8 +21,8 @@
                <img src="{{ $logo_url }}" />
             </a>
             <div class="lg-title inline-block vertical-align-middle primary-color">
-              <h1 class="font-moul">{{ get_bloginfo('name', 'display') }}</h1>
-              <span>MINISTRY OF POSTS<br/>AND TELECOMMUNICATIONS</span>
+              <h1 class="font-moul">{!! __('ក្រសួងប្រៃសណីយ៍<br/> និងទូរគមនាគមន៍', 'sage') !!}</h1>
+              <span>{!! __('MINISTRY OF POSTS<br/>AND TELECOMMUNICATIONS', 'sage') !!}</span>
             </div>
           </div>
           <!-- desktop Cambodia sign -->
