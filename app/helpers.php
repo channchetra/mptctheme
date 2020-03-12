@@ -137,14 +137,85 @@ function display_sidebar()
     return $display;
 }
 
-// if (!function_exists('mptc_get_the_post_thumbnail')) {
-//     function mptc_get_the_post_thumbnail($size = 'post-thumbnail')
-//     {
-//         if (has_post_thumbnail()) {
-//             $url = get_the_post_thumbnail_url('', $size);
-//         } else {
-//             $url = get_template_directory_uri().'/asset/img/'.$size.'.png';
-//         }
-//         return $url;
-//     }
-// }
+/**
+ * Custom template helper for mptctheme
+ */
+
+function mptc_thumbnail($size = 'post-thumbnail')
+{
+    if (has_post_thumbnail()) {
+        $url = get_the_post_thumbnail_url('', $size);
+    } else {
+        $url = asset_path('images/'). $size.'.png';
+    }
+    return $url;
+}
+
+function mptc_post_paginations()
+{
+    the_posts_pagination(array(
+        'prev_text' => '<span class="oi oi-media-skip-backward"></span>',
+        'next_text' =>  '<span class="oi oi-media-skip-forward"></span>',
+        'mid_size'  => 2,
+        'type'      => 'list'
+        ));
+}
+    /**
+     * Prints HTML with meta information for the current post-date/time.
+     */
+function mptc_posted_on()
+{
+
+    $time_string = '<time class="entry-date published updated" datetime="%1$s">%2$s</time>';
+    if (get_the_time('U') !== get_the_modified_time('U')) {
+        $time_string = '<time class="entry-date published" datetime="%1$s">%2$s</time>';
+    }
+
+    $time_string = sprintf(
+        $time_string,
+        esc_attr(get_the_date(DATE_W3C)),
+        esc_html(get_the_date())
+    );
+
+    $posted_on = sprintf(
+        /* translators: %s: post date. */
+        esc_html_x('%s', 'post date', 'sage'),
+        $time_string
+    );
+
+    echo '<span>' . $posted_on . '</span>'; // WPCS: XSS OK.
+}
+
+function mptc_posted_by()
+{
+    $html = '<span>%s <a href="' . esc_url(get_author_posts_url(get_the_author_meta('ID'))) . '" class="fn">' . esc_html(get_the_author()) . '</a></span>';
+    printf($html, __('អត្ថបទដោយ', 'sage'));
+}
+
+function mptc_the_posted_view_count()
+{
+    $html = '<span>%s ('. mptc_get_the_posted_view_count().')</span>';
+    printf($html, __('ចំនួនទស្សនា', 'sage'));
+}
+
+function mptc_kilo_mega_giga($number)
+{
+    $number_format = number_format_i18n($number);
+    $exploded = explode(',', $number_format);
+    $count = count($exploded);
+
+    switch ($count) {
+        case 2:
+            $value = number_format_i18n($number/1000, 1).'K';
+            break;
+        case 3:
+            $value = number_format_i18n($number/1000000, 1).'M';
+            break;
+        case 4:
+            $value = number_format_i18n($number/1000000000, 1).'G';
+            break;
+        default:
+            $value = $number;
+    }
+    return $value;
+}

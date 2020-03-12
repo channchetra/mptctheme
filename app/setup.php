@@ -90,10 +90,10 @@ add_action('after_setup_theme', function () {
  */
 add_action('widgets_init', function () {
     $config = [
-        'before_widget' => '<section class="widget %1$s %2$s">',
-        'after_widget'  => '</section>',
-        'before_title'  => '<h3>',
-        'after_title'   => '</h3>'
+        'before_widget' => '',
+        'after_widget'  => '',
+        'before_title'  => '<div class="block-title2 primary-color">',
+        'after_title'   => '</div>'
     ];
     register_sidebar([
         'name'          => __('Primary', 'sage'),
@@ -142,3 +142,42 @@ add_action('after_setup_theme', function () {
         return "<?= " . __NAMESPACE__ . "\\asset_path({$asset}); ?>";
     });
 });
+
+
+
+/**
+ * Custom Function for mptctheme
+ */
+
+function mptc_track_post_views($post_id)
+{
+
+    if (is_singular()) {
+        if (empty($post_id)) {
+            global $post;
+            $post_id = $post->ID;
+        }
+
+        $countKey = 'post_views_count';
+        $count = get_post_meta($post_id, $countKey, true);
+        if ($count == '') {
+            $count = 0;
+            delete_post_meta($post_id, $countKey);
+            add_post_meta($post_id, $countKey, '0');
+        } else {
+            $count++;
+            update_post_meta($post_id, $countKey, $count);
+        }
+    }
+}
+// add_action('wp_head', 'mptc_track_post_views');
+remove_action('wp_head', 'adjacent_posts_rel_link_wp_head', 10, 0);
+
+function mptc_get_the_posted_view_count()
+{
+    $view = get_post_meta(get_the_ID(), 'post_views_count');
+    if ($view) {
+        return mptc_kilo_mega_giga($view[0]);
+    }
+    return 0;
+}

@@ -4,6 +4,9 @@
         <div class="pt-2"></div>
         <!-- mobile polylang -->
         <div class="languages d-block text-center">
+           {{-- @php
+                do_action( 'wpml_language_switcher' );
+           @endphp --}}
             <ul>
                 <li class="active"><a href="#">ខ្មែរ</a></li>
                 <li><a href="#">Eng</a></li>

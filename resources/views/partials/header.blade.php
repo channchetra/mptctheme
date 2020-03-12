@@ -26,7 +26,7 @@
             </div>
           </div>
           <!-- desktop Cambodia sign -->
-          <div class="col-5 logo-wrap text-right">
+          <div class="col-5 logo-wrap text-right my-auto">
             <!-- desktop top menu -->
             @if (has_nav_menu('primary_navigation'))
               {!! wp_nav_menu(['theme_location' => 'top_navigation', 'container' => 'nav', 'container_class' => 'short-link mb-2']) !!}
@@ -46,6 +46,9 @@
             <!-- desktop polylang -->
             <div class="languages d-inline-block">
               <ul>
+                {{-- @php
+                    do_action( 'wpml_add_language_selector' )
+                @endphp --}}
                 <li class="active"><a href="#">ខ្មែរ</a></li>
                 <li><a href="#">Eng</a></li>
               </ul>
