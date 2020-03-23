@@ -28,7 +28,7 @@
     @php do_action('get_footer') @endphp
         <div class="content">
           @include('partials.footer')
-          @include('partials.responsive-switcher')
+          {{-- @include('partials.responsive-switcher') --}}
         </div>
     </div>
     <!--End of Wrapper -->
