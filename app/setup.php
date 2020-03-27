@@ -182,7 +182,7 @@ function mptc_get_the_posted_view_count()
     return 0;
 }
 
-// function mptc_template_seletor()
-// {
-//     get_term_meta(get_queried_object_id(), '_mptc_layout_type', true);
-// }
+function mptc_template_seletor()
+{
+    $cat_layout = get_term_meta(get_queried_object_id(), '_mptc_layout_type', true);
+}
