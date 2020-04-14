@@ -140,6 +140,20 @@ function display_sidebar()
 /**
  * Custom template helper for mptctheme
  */
+function mptc_render_layout_class()
+{
+    $layout = get_term_meta(get_queried_object_id(), '_mptc_layout_type', true);
+    switch ($layout) {
+        case '_gallery':
+            return 'b-1 row';
+            break;
+        case '_documents':
+        case '_videos':
+        default:
+            return 'b-2';
+            break;
+    }
+}
 
 function mptc_thumbnail($size = 'post-thumbnail')
 {
@@ -186,6 +200,18 @@ function mptc_posted_on()
     echo '<span>' . $posted_on . '</span>'; // WPCS: XSS OK.
 }
 
+function mptc_download_view()
+{
+    $document = get_post_meta(get_the_ID(), '_mptc_document_file', true);
+    
+    if (!empty($document)) {
+        $render_d = '<a href="'. $document . '"><span class="oi oi-cloud-download"></span>%s </a>';
+        printf($render_d, __('ទាញយក', 'sage'));
+    } else {
+        $render_v = '<a href="' . get_the_permalink() . '"><span class="oi oi-eye"></span>%s </a>';
+        printf($render_v, __('បើកមើល', 'sage'));
+    }
+}
 function mptc_posted_by()
 {
     $html = '<span>%s <a href="' . esc_url(get_author_posts_url(get_the_author_meta('ID'))) . '" class="fn">' . esc_html(get_the_author()) . '</a></span>';
