@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/wp-content/themes/mptctheme/dist/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 129);
+/******/ 	return __webpack_require__(__webpack_require__.s = 131);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -1919,7 +1919,7 @@
             try {
                 oldLocale = globalLocale._abbr;
                 var aliasedRequire = require;
-                __webpack_require__(143)("./" + name);
+                __webpack_require__(146)("./" + name);
                 getSetGlobalLocale(oldLocale);
             } catch (e) {}
         }
@@ -4670,7 +4670,7 @@
 
 })));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(142)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(145)(module)))
 
 /***/ }),
 /* 1 */
@@ -16880,24 +16880,704 @@ module.exports = jQuery;
 /* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(130);
-module.exports = __webpack_require__(149);
+/**
+ * be : Buddhist Era
+ * ad : Anno Domini
+ *
+ * The following calculation is from "Pratitin Soryakkatik-Chankatik 1900-1999" by Mr. Roath Kim Soeun.
+ * It illustrates how to determine if a given year is a normal year, leap-day year, or leap-month year.
+ * The calculation can use different eras including Buddhist Era, Jola Sakaraj but not AD.
+ * Here we choose to use only Buddhist Era.
+ *
+ * @credit http://www.cam-cc.org
+ * @ref http://www.dahlina.com/education/khmer_new_year_time.html?fbclid=IwAR3lVUvvd4bM6QD635djBpgWt_VDE9KFf4zfqK02RiagIVvRtDMkY2TNWMo
+ */
+
+// const Moment = require('moment');
+function getLocaleConfig() {
+  return __webpack_require__(147);
+}
+
+let config = getLocaleConfig();
+
+let {LunarMonths, SolarMonth, MoonStatus, khNewYearMoments} = __webpack_require__(130);
+
+;(function (global, factory) {
+   true ? module.exports = factory :
+    typeof define === 'function' && define.amd ? define(factory) :
+      global.momentkh = factory
+}(this, (function (Moment) {
+  'use strict';
+
+  Moment.khNewYearMoments = khNewYearMoments
+
+  /**
+   * Bodithey: បូតិថី
+   * Bodithey determines if a given beYear is a leap-month year. Given year target year in Buddhist Era
+   * @return Number (0-29)
+   */
+  function getBodithey(beYear) {
+    let ahk = getAharkun(beYear);
+    let avml = Math.floor((11 * ahk + 25) / 692);
+    let m = avml + ahk + 29;
+    return (m % 30);
+  }
+
+  /**
+   * Avoman: អាវមាន
+   * Avoman determines if a given year is a leap-day year. Given a year in Buddhist Era as denoted as adYear
+   * @param beYear (0 - 691)
+   */
+  function getAvoman(beYear) {
+    let ahk = getAharkun(beYear);
+    let avm = (11 * ahk + 25) % 692;
+    return avm;
+  }
+
+  /**
+   * Aharkun: អាហារគុណ ឬ ហារគុណ
+   * Aharkun is used for Avoman and Bodithey calculation below. Given adYear as a target year in Buddhist Era
+   * @param beYear
+   * @returns {number}
+   */
+  function getAharkun(beYear) {
+    let t = beYear * 292207 + 499;
+    let ahk = Math.floor(t / 800) + 4;
+    return ahk;
+  }
+
+  /**
+   * Kromathupul
+   * @param beYear
+   * @returns {number} (1-800)
+   */
+  function kromthupul(beYear) {
+    let ah = getAharkunMod(beYear);
+    let krom = 800 - ah;
+    return krom;
+  }
+
+  /**
+   * isKhmerSolarLeap
+   * @param beYear
+   * @returns {number}
+   */
+  function isKhmerSolarLeap(beYear) {
+    let krom = kromthupul(beYear);
+    if (krom <= 207)
+      return 1;
+    else
+      return 0;
+  }
+
+  /**
+   * getAkhakunMod
+   * @param beYear
+   * @returns {number}
+   */
+  function getAharkunMod(beYear) {
+    let t = beYear * 292207 + 499;
+    let ahkmod = t % 800;
+    return ahkmod;
+  }
+
+  /**
+   * * Regular if year has 30 day
+   * * leap month if year has 13 months
+   * * leap day if Jesth month of the year has 1 extra day
+   * * leap day and month: both of them
+   * @param beYear
+   * @returns {number} return 0:regular, 1:leap month, 2:leap day, 3:leap day and month
+   */
+  function getBoditheyLeap(beYear) {
+    let result = 0;
+    let avoman = getAvoman(beYear);
+    let bodithey = getBodithey(beYear);
+
+    // check bodithey leap month
+    let boditheyLeap = 0;
+    if (bodithey >= 25 || bodithey <= 5) {
+      boditheyLeap = 1;
+    }
+    // check for avoman leap-day based on gregorian leap
+    let avomanLeap = 0;
+    if (isKhmerSolarLeap(beYear)) {
+      if (avoman <= 126)
+        avomanLeap = 1;
+    } else {
+      if (avoman <= 137) {
+        // check for avoman case 137/0, 137 must be normal year (p.26)
+        if (getAvoman(beYear + 1) === 0) {
+          avomanLeap = 0;
+        } else {
+          avomanLeap = 1;
+        }
+      }
+    }
+
+    // case of 25/5 consecutively
+    // only bodithey 5 can be leap-month, so set bodithey 25 to none
+    if (bodithey === 25) {
+      let nextBodithey = getBodithey(beYear + 1);
+      if (nextBodithey === 5) {
+        boditheyLeap = 0;
+      }
+    }
+
+    // case of 24/6 consecutively, 24 must be leap-month
+    if (bodithey == 24) {
+      let nextBodithey = getBodithey(beYear + 1);
+      if (nextBodithey == 6) {
+        boditheyLeap = 1;
+      }
+    }
+
+    // format leap result (0:regular, 1:month, 2:day, 3:both)
+    if (boditheyLeap === 1 && avomanLeap === 1) {
+      result = 3;
+    } else if (boditheyLeap === 1) {
+      result = 1;
+    } else if (avomanLeap === 1) {
+      result = 2;
+    } else {
+      result = 0;
+    }
+
+    return result;
+  }
+
+  // return 0:regular, 1:leap month, 2:leap day (no leap month and day together)
+  /**
+   * bodithey leap can be both leap-day and leap-month but following the khmer calendar rule, they can't be together on the same year, so leap day must be delayed to next year
+   * @param beYear
+   * @returns {number}
+   */
+  function getProtetinLeap(beYear) {
+    let b = getBoditheyLeap(beYear);
+    if (b === 3) {
+      return 1;
+    }
+    if (b === 2 || b === 1) {
+      return b;
+    }
+    // case of previous year is 3
+    if (getBoditheyLeap(beYear - 1) === 3) {
+      return 2;
+    }
+    // normal case
+    return 0;
+  }
+
+  /**
+   * Maximum number of day in Khmer Month
+   * @param beMonth
+   * @param beYear
+   * @returns {number}
+   */
+  function getNumberOfDayInKhmerMonth(beMonth, beYear) {
+    if (beMonth === LunarMonths.ជេស្ឋ && isKhmerLeapDay(beYear)) {
+      return 30;
+    }
+    if (beMonth === LunarMonths.បឋមាសាឍ || beMonth === LunarMonths.ទុតិយាសាឍ) {
+      return 30;
+    }
+    // មិគសិរ : 29 , បុស្ស : 30 , មាឃ : 29 .. 30 .. 29 ..30 .....
+    return beMonth % 2 === 0 ? 29 : 30;
+  }
+
+  /**
+   * Get number of day in Khmer year
+   * @param beYear
+   * @returns {number}
+   */
+  function getNumerOfDayInKhmerYear(beYear) {
+    if (isKhmerLeapMonth(beYear)) {
+      return 384;
+    } else if (isKhmerLeapDay(beYear)) {
+      return 355;
+    } else {
+      return 354;
+    }
+  }
+
+  /**
+   * Get number of day in Gregorian year
+   * @param adYear
+   * @returns {number}
+   */
+  function getNumberOfDayInGregorianYear(adYear) {
+    if (isGregorianLeap(adYear)) {
+      return 366;
+    } else {
+      return 365;
+    }
+  }
+
+  /**
+   * A year with an extra month is called Adhikameas (អធិកមាស). This year has 384 days.
+   * @param beYear
+   * @returns {boolean}
+   */
+  function isKhmerLeapMonth(beYear) {
+    return getProtetinLeap(beYear) === 1
+  }
+
+  /**
+   * A year with an extra day is called Chhantrea Thimeas (ចន្ទ្រាធិមាស) or Adhikavereak (អធិកវារៈ). This year has 355 days.
+   * @param beYear
+   * @returns {boolean}
+   */
+  function isKhmerLeapDay(beYear) {
+    return getProtetinLeap(beYear) === 2
+  }
+
+  /**
+   * Gregorian Leap
+   * @param adYear
+   * @returns {boolean}
+   */
+  function isGregorianLeap(adYear) {
+    if (adYear % 4 === 0 && adYear % 100 !== 0 || adYear % 400 === 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * Buddhist Era
+   * ថ្ងៃឆ្លងឆ្នាំ គឺ ១ រោច ខែពិសាខ
+   * @ref http://news.sabay.com.kh/article/1039620
+   * @summary: ឯកឧត្តម សេង សុមុនី អ្នកនាំពាក្យ​ក្រ​សួង​ធម្មការ និង​សាសនា​ឲ្យ​Sabay ដឹង​ថា​នៅ​ប្រ​ទេស​កម្ពុជា​ការ​ឆ្លង​ចូល​ពុទ្ធសករាជថ្មី​គឺ​កំណត់​យក​នៅ​ថ្ងៃព្រះ​ពុទ្ធយាងចូល​និព្វាន ពោល​គឺ​នៅ​ថ្ងៃ​១រោច ខែពិសាខ។
+   * @param moment
+   * @returns {*}
+   */
+  function getBEYear(moment) {
+    if (moment.khMonth() > 5 || moment.khMonth() === 5 && moment.khDay() >= 15) {
+      return parseInt(moment.format('YYYY')) + 544;
+    } else {
+      return parseInt(moment.format('YYYY')) + 543;
+    }
+  }
+
+  /**
+   * Due to recursive problem, I need to calculate the BE based on new year's day
+   * This won't be displayed on final result, it is used to find number of day in year,
+   * It won't affect the result because on ខែចេត្រ និង ខែពិសាខ, number of days is the same every year
+   * ពីព្រោះចូលឆ្នាំតែងតែចំខែចេត្រ​ ឬ ពិសាខ
+   * @param moment
+   * @returns {*}
+   */
+  function getMaybeBEYear(moment) {
+    if (parseInt(moment.format('M')) <= SolarMonth.មេសា + 1) {
+      return parseInt(moment.format('YYYY')) + 543;
+    } else {
+      return parseInt(moment.format('YYYY')) + 544;
+    }
+  }
+
+  /**
+   * Moha Sakaraj
+   * @param adYear
+   * @returns {number}
+   */
+  function getMohaSakarajYear(adYear) {
+    return adYear - 77;
+  }
+
+  /**
+   * Jolak Sakaraj
+   * @param beYear
+   * @returns {number}
+   */
+  function getJolakSakarajYear(moment) {
+    let gregorianYear = parseInt(moment.format('YYYY'));
+    let newYearMoment = getKhNewYearMoment(gregorianYear);
+    if (moment.diff(newYearMoment) < 0) {
+      return gregorianYear + 543 - 1182
+    } else {
+      return gregorianYear + 544 - 1182
+    }
+  }
+
+  /**
+   * ១កើត ៤កើត ២រោច ១៤រោច ...
+   * @param day 1-30
+   * @returns {{count: number, moonStatus: number}}
+   */
+  function getKhmerLunarDay(day) {
+    return {
+      count: (day % 15) + 1,
+      moonStatus: day > 14 ? MoonStatus.រោច : MoonStatus.កើត
+    }
+  }
+
+  /**
+   * Turn be year to animal year
+   * @param beYear
+   * @returns {number}
+   */
+  function getAnimalYear(moment) {
+    let gregorianYear = parseInt(moment.format('YYYY'));
+    let newYearMoment = getKhNewYearMoment(gregorianYear);
+    if (moment.diff(newYearMoment) < 0) {
+      return (gregorianYear + 543 + 4) % 12
+    } else {
+      return (gregorianYear + 544 + 4) % 12
+    }
+  }
+
+  /**
+   * Khmer date format handler
+   * @param day
+   * @param month
+   * @param moment
+   * @param format
+   * @returns {*}
+   */
+  function formatKhmerDate({day, month, moment}, format) {
+    if (format === null || format === undefined) {
+      // Default date format
+      let dayOfWeek = moment.day();
+      let moonDay = getKhmerLunarDay(day);
+      let beYear = getBEYear(moment);
+      let animalYear = getAnimalYear(moment);
+      let eraYear = getJolakSakarajYear(moment) % 10;
+      return config.postformat(`ថ្ងៃ${config.weekdays[dayOfWeek]} ${moonDay.count}${config.moonStatus[moonDay.moonStatus]} ខែ${config.lunarMonths[month]} ឆ្នាំ${config.animalYear[animalYear]} ${config.eraYear[eraYear]} ពុទ្ធសករាជ ${beYear}`);
+    } else if (typeof format === 'string') {
+      // Follow the format
+      let formatRule = {
+        'W': function () { // Day of week
+          let dayOfWeek = moment.day();
+          return config.weekdays[dayOfWeek]
+        },
+        'w': function () { // Day of week
+          let dayOfWeek = moment.day();
+          return config.weekdaysShort[dayOfWeek]
+        },
+        'd': function () { // no determine digit
+          let moonDay = getKhmerLunarDay(day);
+          return moonDay.count;
+        },
+        'D': function () { // minimum 2 digits
+          let moonDay = getKhmerLunarDay(day);
+          return ('' + moonDay.count).length === 1 ? '0' + moonDay.count : moonDay.count;
+        },
+        'n': function () {
+          let moonDay = getKhmerLunarDay(day);
+          return config.moonStatusShort[moonDay.moonStatus]
+        },
+        'N': function () {
+          let moonDay = getKhmerLunarDay(day);
+          return config.moonStatus[moonDay.moonStatus]
+        },
+        'o': function () {
+          return config.moonDays[day];
+        },
+        'm': function () {
+          return config.lunarMonths[month];
+        },
+        'a': function () {
+          let animalYear = getAnimalYear(moment);
+          return config.animalYear[animalYear];
+        },
+        'e': function () {
+          let eraYear = getJolakSakarajYear(moment) % 10;
+          return config.eraYear[eraYear];
+        },
+        'b': function () {
+          return getBEYear(moment);
+        },
+        'c': function () {
+          return moment.format('YYYY');
+        },
+        'j': function () {
+          return getJolakSakarajYear(moment);
+        }
+      }
+
+      return config.postformat(format.replace(new RegExp(Object.keys(formatRule).join('|'), 'g'), function (matched) {
+        return formatRule[matched]();
+      }));
+
+    }
+    Error(format + ' is not a valid date format.');
+  }
+
+  /**
+   * Read Khmer lunar date
+   * @param params : String (2) (input and format)
+   * @or @param Object {ថ្ងៃ: ..., កើត: ..., ខែ: ..., ពស: ...}
+   * @return Moment
+   */
+  function readLunarDate(...params) {
+    console.log('Now working yet')
+  }
+
+  /**
+   * Next month of the month
+   */
+  function nextMonthOf(khmerMonth, BEYear) {
+    switch (khmerMonth) {
+    case LunarMonths.មិគសិរ:
+      return LunarMonths.បុស្ស;
+    case LunarMonths.បុស្ស:
+      return LunarMonths.មាឃ;
+    case LunarMonths.មាឃ:
+      return LunarMonths.ផល្គុន;
+    case LunarMonths.ផល្គុន:
+      return LunarMonths.ចេត្រ;
+    case LunarMonths.ចេត្រ:
+      return LunarMonths.ពិសាខ;
+    case LunarMonths.ពិសាខ:
+      return LunarMonths.ជេស្ឋ;
+    case LunarMonths.ជេស្ឋ: {
+      if (isKhmerLeapMonth(BEYear)) {
+        return LunarMonths.បឋមាសាឍ
+      } else {
+        return LunarMonths.អាសាឍ
+      }
+    }
+    case LunarMonths.អាសាឍ:
+      return LunarMonths.ស្រាពណ៍;
+    case LunarMonths.ស្រាពណ៍:
+      return LunarMonths.ភទ្របទ;
+    case LunarMonths.ភទ្របទ:
+      return LunarMonths.អស្សុជ;
+    case LunarMonths.អស្សុជ:
+      return LunarMonths.កក្ដិក;
+    case LunarMonths.កក្ដិក:
+      return LunarMonths.មិគសិរ;
+    case LunarMonths.បឋមាសាឍ:
+      return LunarMonths.ទុតិយាសាឍ;
+    case LunarMonths.ទុតិយាសាឍ:
+      return LunarMonths.ស្រាពណ៍;
+    default:
+      throw Error('Plugin is facing wrong calculation (Invalid month)');
+    }
+  }
+
+  /**
+   * Calculate date from momoentjs to Khmer date
+   * @param target : Moment
+   * @returns {{day: number, month: *, epochMoved: (*|moment.Moment)}}
+   */
+  function findLunarDate(target) {
+    /**
+     * Epoch Date: January 1, 1900
+     */
+    let epochMoment = Moment('1/1/1900', 'D/M/YYYY')
+    let khmerMonth = LunarMonths.បុស្ស;
+    let khmerDay = 0; // 0 - 29 ១កើត ... ១៥កើត ១រោច ...១៤រោច (១៥រោច)
+
+    let differentFromEpoch = target.diff(epochMoment)
+
+    // Find nearest year epoch
+    if (differentFromEpoch > 0) {
+      while (Moment.duration(target.diff(epochMoment), 'milliseconds').asDays() > getNumerOfDayInKhmerYear(getMaybeBEYear(epochMoment.clone().add(1, 'year')))) {
+        epochMoment.add(getNumerOfDayInKhmerYear(getMaybeBEYear(epochMoment.clone().add(1, 'year'))), 'day')
+      }
+    } else {
+      do {
+        epochMoment.subtract(getNumerOfDayInKhmerYear(getMaybeBEYear(epochMoment)), 'day')
+      } while (Moment.duration(epochMoment.diff(target), 'milliseconds').asDays() > 0)
+    }
+
+    // Move epoch month
+    while (Moment.duration(target.diff(epochMoment), 'milliseconds').asDays() > getNumberOfDayInKhmerMonth(khmerMonth, getMaybeBEYear(epochMoment))) {
+      epochMoment.add(getNumberOfDayInKhmerMonth(khmerMonth, getMaybeBEYear(epochMoment)), 'day');
+      khmerMonth = nextMonthOf(khmerMonth, getMaybeBEYear(epochMoment))
+    }
+
+    khmerDay += Math.floor(Moment.duration(target.diff(epochMoment), 'milliseconds').asDays());
+
+    /**
+     * Fix result display 15 រោច ខែ ជេស្ឋ នៅថ្ងៃ ១ កើតខែបឋមាសាធ
+     * ករណី ខែជេស្ឋមានតែ ២៩ ថ្ងៃ តែលទ្ធផលបង្ហាញ ១៥រោច ខែជេស្ឋ
+     */
+     const totalDaysOfTheMonth = getNumberOfDayInKhmerMonth(khmerMonth, getMaybeBEYear(target))
+    if (totalDaysOfTheMonth <= khmerDay) {
+      khmerDay = khmerDay % totalDaysOfTheMonth
+      khmerMonth = nextMonthOf(khmerMonth, getMaybeBEYear(epochMoment))
+    }
+
+    epochMoment.add(Moment.duration(target.diff(epochMoment), 'milliseconds').asDays(), 'day');
+
+    return {
+      day: khmerDay,
+      month: khmerMonth,
+      epochMoved: epochMoment
+    }
+  }
+
+  /**
+   * Return khmer lunar date
+   * @param format String (wanted format)
+   * @return String
+   * @or @param Array (wanted field) [ថ្ងៃ ថ្ងៃទី កើត/រោច ខែចន្ទគតិ ខែសុរិយគតិ ឆ្នាំសត្វ ឆ្នាំស័ក ពស គស ចស មស សីល]
+   * @return Object
+   */
+  function toLunarDate(format) {
+
+    let target = this.clone();
+
+    let result = findLunarDate(target);
+
+    return formatKhmerDate({
+      day: result.day,
+      month: result.month,
+      moment: target
+    }, format)
+  }
+
+  function getKhNewYearMoment(gregorianYear) {
+    if (Moment.khNewYearMoments[gregorianYear] !== undefined) {
+      // console.log('cache')
+      return Moment(Moment.khNewYearMoments[gregorianYear], 'DD-MM-YYYY H:m')
+    } else {
+      // console.log('calculate')
+      const getSoriyatraLerngSak = __webpack_require__(148)
+      // ពីគ្រិស្ដសករាជ ទៅ ចុល្លសករាជ
+      let jsYear = (gregorianYear + 544) - 1182;
+      let info = getSoriyatraLerngSak(jsYear);
+      // ចំនួនថ្ងៃចូលឆ្នាំ
+      let numberNewYearDay;
+      if (info.newYearsDaySotins[0].angsar === 0) { // ថ្ងៃ ខែ ឆ្នាំ ម៉ោង និង នាទី ចូលឆ្នាំ
+        // ចូលឆ្នាំ ៤ ថ្ងៃ
+        numberNewYearDay = 4;
+        // return Moment(`13-04-${gregorianYear} ${info.timeOfNewYear.hour}:${info.timeOfNewYear.minute}`, 'DD-MM-YYYY H:m')
+      } else {
+        // ចូលឆ្នាំ ៣ ថ្ងៃ
+        numberNewYearDay = 3;
+        // return Moment(`14-04-${gregorianYear} ${info.timeOfNewYear.hour}:${info.timeOfNewYear.minute}`, 'DD-MM-YYYY H:m')
+      }
+      let epochLerngSak = Moment(`17-04-${gregorianYear} ${info.timeOfNewYear.hour}:${info.timeOfNewYear.minute}`, 'DD-MM-YYYY H:m')
+      let khEpoch = findLunarDate(epochLerngSak)
+      let diffFromEpoch = (((khEpoch.month - 4) * 30) + khEpoch.day) -
+                          (((info.lunarDateLerngSak.month - 4) * 30) + info.lunarDateLerngSak.day)
+      let result = epochLerngSak.subtract(diffFromEpoch + numberNewYearDay - 1, 'day')
+      // Caching
+      Moment.khNewYearMoments[gregorianYear] = result.format('DD-MM-YYYY H:m')
+      return result
+    }
+  }
+
+  function khDay() {
+    let result = findLunarDate(this.clone());
+    return result.day;
+  }
+
+  function khMonth() {
+    let result = findLunarDate(this.clone());
+    return result.month;
+  }
+
+  function khYear() {
+    return getBEYear(this.clone());
+  }
+
+  Moment.readLunarDate =
+    Moment.khDate =
+      Moment.khdate =
+        readLunarDate;
+
+  Moment.fn.toLunarDate =
+    Moment.fn.toKhDate =
+      Moment.fn.tokhdate =
+        toLunarDate;
+
+  Moment.getKhNewYearMoment = getKhNewYearMoment;
+
+  Moment.fn.khDay = khDay;
+  Moment.fn.khMonth = khMonth;
+  Moment.fn.khYear = khYear;
+
+  return Moment;
+})));
 
 
 /***/ }),
 /* 130 */
+/***/ (function(module, exports, __webpack_require__) {
+
+;(function (global, factory) {
+   true ? module.exports = factory() :
+    typeof define === 'function' && define.amd ? define(factory) :
+      global.constant = factory()
+}(this, (function () {
+  'use strict';
+
+  const LunarMonths = {};
+  "មិគសិរ_បុស្ស_មាឃ_ផល្គុន_ចេត្រ_ពិសាខ_ជេស្ឋ_អាសាឍ_ស្រាពណ៍_ភទ្របទ_អស្សុជ_កក្ដិក_បឋមាសាឍ_ទុតិយាសាឍ".split("_").forEach((month, index) => {
+    LunarMonths[month] = index
+  });
+
+  const SolarMonth = {};
+  'មករា_កុម្ភៈ_មីនា_មេសា_ឧសភា_មិថុនា_កក្កដា_សីហា_កញ្ញា_តុលា_វិច្ឆិកា_ធ្នូ'.split('_').forEach((month, index) => {
+    SolarMonth[month] = index
+  });
+
+  const AnimalYear = {};
+  "ជូត_ឆ្លូវ_ខាល_ថោះ_រោង_ម្សាញ់_មមីរ_មមែ_វក_រកា_ច_កុរ".split("_").forEach((year, index) => {
+    AnimalYear[year] = index
+  });
+
+  const EraYear = {};
+  "សំរឹទ្ធិស័ក_ឯកស័ក_ទោស័ក_ត្រីស័ក_ចត្វាស័ក_បញ្ចស័ក_ឆស័ក_សប្តស័ក_អដ្ឋស័ក_នព្វស័ក".split("_").forEach((year, index) => {
+    EraYear[year] = index
+  });
+
+  const MoonStatus = {};
+  "កើត_រោច".split("_").forEach((moon, index) => {
+    MoonStatus[moon] = index
+  });
+
+  // ឆ្នាំលើកលែងមួយចំនួនដែលខុសពីការគណនា
+  const khNewYearMoments = {
+    '1879' : '12-04-1879 11:36',
+    '2011' : '14-04-2011 13:12',
+    '2012' : '14-04-2012 19:11',
+    '2013' : '14-04-2013 02:12',
+    '2014' : '14-04-2014 08:07',
+    '2015' : '14-04-2015 14:02'
+  }
+
+  return {
+    LunarMonths,
+    SolarMonth,
+    AnimalYear,
+    EraYear,
+    MoonStatus,
+    khNewYearMoments,
+  }
+})));
+
+
+/***/ }),
+/* 131 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(132);
+module.exports = __webpack_require__(154);
+
+
+/***/ }),
+/* 132 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function(jQuery) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_mptchtml_src_js_main_js__ = __webpack_require__(131);
+/* WEBPACK VAR INJECTION */(function(jQuery) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_mptchtml_src_js_main_js__ = __webpack_require__(133);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_moment__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_moment__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__util_Router__ = __webpack_require__(144);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__routes_common__ = __webpack_require__(146);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__routes_home__ = __webpack_require__(147);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__routes_about__ = __webpack_require__(148);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__thyrith_momentkh__ = __webpack_require__(129);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__thyrith_momentkh___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__thyrith_momentkh__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__util_Router__ = __webpack_require__(149);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__routes_common__ = __webpack_require__(151);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__routes_home__ = __webpack_require__(152);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__routes_about__ = __webpack_require__(153);
 // import external dependencies
+
 
 
 
@@ -16911,39 +17591,56 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /** Populate Router instance with DOM routes */
-var routes = new __WEBPACK_IMPORTED_MODULE_2__util_Router__["a" /* default */]({
+var routes = new __WEBPACK_IMPORTED_MODULE_3__util_Router__["a" /* default */]({
   // All pages
-  common: __WEBPACK_IMPORTED_MODULE_3__routes_common__["a" /* default */],
+  common: __WEBPACK_IMPORTED_MODULE_4__routes_common__["a" /* default */],
   // Home page
-  home: __WEBPACK_IMPORTED_MODULE_4__routes_home__["a" /* default */],
+  home: __WEBPACK_IMPORTED_MODULE_5__routes_home__["a" /* default */],
   // About Us page, note the change from about-us to aboutUs.
-  aboutUs: __WEBPACK_IMPORTED_MODULE_5__routes_about__["a" /* default */],
+  aboutUs: __WEBPACK_IMPORTED_MODULE_6__routes_about__["a" /* default */],
 });
 
+var moment = __webpack_require__(0);
+// Add our features to your preferred moment.js version
+__webpack_require__(129)(moment);
+
+// From now on, your moment js is transformed
+
+var today = moment();
+
+console.log(today);
+// Display date today as moment js object
+// For example: moment("2018-12-15T14:49:38.586")
+var khmerDate = today.toLunarDate('ថ្ងៃdN ខែm ឆ្នាំa ព.ស.b');
+// Display khmer date
+// For example: ថ្ងៃសៅរ៍ ៨កើត ខែមិគសិរ ឆ្នាំច សំរឹទ្ធស័ក ពុទ្ធសករាជ ២៥៦២
+document.getElementById('input-khmer-time').value = khmerDate;
 // Load Events
 jQuery(document).ready(function () { return routes.loadEvents(); });
 
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 131 */
+/* 133 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_bootstrap__ = __webpack_require__(132);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_bootstrap__ = __webpack_require__(134);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_bootstrap___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_bootstrap__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_slick_carousel_slick_slick_min__ = __webpack_require__(135);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_slick_carousel_slick_slick_min__ = __webpack_require__(137);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_slick_carousel_slick_slick_min___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_slick_carousel_slick_slick_min__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__jquery_youtubeplaylist_js__ = __webpack_require__(136);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__jquery_youtubeplaylist_js__ = __webpack_require__(138);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__jquery_youtubeplaylist_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__jquery_youtubeplaylist_js__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__common_js__ = __webpack_require__(137);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__common_js__ = __webpack_require__(139);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__common_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__common_js__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__sticky_scroll__ = __webpack_require__(138);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__sticky_scroll__ = __webpack_require__(140);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__sticky_scroll___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__sticky_scroll__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__servay__ = __webpack_require__(139);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__feedback__ = __webpack_require__(140);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__servay__ = __webpack_require__(141);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__feedback__ = __webpack_require__(142);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__click_copy__ = __webpack_require__(144);
+
 
 
 
@@ -16959,9 +17656,10 @@ __WEBPACK_IMPORTED_MODULE_0_jquery___default()(document).ready( () => {
 })
 window.servay = new __WEBPACK_IMPORTED_MODULE_6__servay__["a" /* default */]()
 window.feedback = new __WEBPACK_IMPORTED_MODULE_7__feedback__["a" /* default */]()
+window.clickCopy = new __WEBPACK_IMPORTED_MODULE_8__click_copy__["a" /* default */]()
 
 /***/ }),
-/* 132 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -16970,7 +17668,7 @@ window.feedback = new __WEBPACK_IMPORTED_MODULE_7__feedback__["a" /* default */]
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
   */
 (function (global, factory) {
-   true ? factory(exports, __webpack_require__(1), __webpack_require__(133)) :
+   true ? factory(exports, __webpack_require__(1), __webpack_require__(135)) :
   typeof define === 'function' && define.amd ? define(['exports', 'jquery', 'popper.js'], factory) :
   (global = global || self, factory(global.bootstrap = {}, global.jQuery, global.Popper));
 }(this, (function (exports, $, Popper) { 'use strict';
@@ -21500,7 +22198,7 @@ window.feedback = new __WEBPACK_IMPORTED_MODULE_7__feedback__["a" /* default */]
 
 
 /***/ }),
-/* 133 */
+/* 135 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -24122,10 +24820,10 @@ Popper.Defaults = Defaults;
 /* harmony default export */ __webpack_exports__["default"] = (Popper);
 //# sourceMappingURL=popper.js.map
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(134)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(136)))
 
 /***/ }),
-/* 134 */
+/* 136 */
 /***/ (function(module, exports) {
 
 var g;
@@ -24152,7 +24850,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 135 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!function(i){"use strict"; true?!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1)], __WEBPACK_AMD_DEFINE_FACTORY__ = (i),
@@ -24162,7 +24860,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 136 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(jQuery) {/**
@@ -24496,7 +25194,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 137 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(jQuery) {jQuery(document).ready(function() {
@@ -24543,7 +25241,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     jQuery(".collapse-navbar .menu-item-has-children ul").parent(".current-menu-ancestor").find("ul").show();
     jQuery(".collapse-navbar .menu-item-has-children ul").parent(".current-menu-ancestor").find(".right").toggleClass("oi-chevron-top oi-chevron-bottom");
     jQuery(".collapse-navbar .menu-item-has-children span").click(function () {
-        jQuery(this).parent(".menu-item-has-children").children("ul").slideToggle("slow");
+        jQuery(this).parent(".menu-item-has-children").children("ul").slideToggle(100);
         jQuery(this).parent(".menu-item-has-children").find(".right").toggleClass("oi-chevron-top oi-chevron-bottom");
     });
     
@@ -24642,7 +25340,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 138 */
+/* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function($) {var query = document.querySelector('#menu-tab');
@@ -24659,7 +25357,7 @@ if(query) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 139 */
+/* 141 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -24768,11 +25466,11 @@ class servay {
 /* harmony default export */ __webpack_exports__["a"] = (servay);
 
 /***/ }),
-/* 140 */
+/* 142 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__star__ = __webpack_require__(141);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__star__ = __webpack_require__(143);
 
 
 class feedback extends __WEBPACK_IMPORTED_MODULE_0__star__["a" /* default */] {
@@ -24815,7 +25513,7 @@ class feedback extends __WEBPACK_IMPORTED_MODULE_0__star__["a" /* default */] {
 /* harmony default export */ __webpack_exports__["a"] = (feedback);
 
 /***/ }),
-/* 141 */
+/* 143 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -24868,7 +25566,22 @@ class star {
 /* harmony default export */ __webpack_exports__["a"] = (star);
 
 /***/ }),
-/* 142 */
+/* 144 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+
+class clickCopy {
+    action( id ) {
+        const copyText = document.getElementById(id)
+        copyText.select()                            
+        document.execCommand('copy')
+    }
+}
+/* harmony default export */ __webpack_exports__["a"] = (clickCopy);
+
+/***/ }),
+/* 145 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -24896,7 +25609,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 143 */
+/* 146 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
@@ -25169,14 +25882,369 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 143;
+webpackContext.id = 146;
 
 /***/ }),
-/* 144 */
+/* 147 */
+/***/ (function(module, exports, __webpack_require__) {
+
+//! moment.js locale configuration
+
+;(function (global, factory) {
+   true ? module.exports = factory() :
+    typeof define === 'function' && define.amd ? define(factory) :
+      global.momentkh = factory()
+}(this, (function () {
+  'use strict';
+
+  let symbolMap = {
+    '1': '១',
+    '2': '២',
+    '3': '៣',
+    '4': '៤',
+    '5': '៥',
+    '6': '៦',
+    '7': '៧',
+    '8': '៨',
+    '9': '៩',
+    '0': '០'
+  }, numberMap = {
+    '១': '1',
+    '២': '2',
+    '៣': '3',
+    '៤': '4',
+    '៥': '5',
+    '៦': '6',
+    '៧': '7',
+    '៨': '8',
+    '៩': '9',
+    '០': '0'
+  };
+
+  return {
+    months: 'មករា_កុម្ភៈ_មីនា_មេសា_ឧសភា_មិថុនា_កក្កដា_សីហា_កញ្ញា_តុលា_វិច្ឆិកា_ធ្នូ'.split('_'),
+    monthsShort: 'មករា_កុម្ភៈ_មីនា_មេសា_ឧសភា_មិថុនា_កក្កដា_សីហា_កញ្ញា_តុលា_វិច្ឆិកា_ធ្នូ'.split('_'),
+    moonDays: '᧡_᧢_᧣_᧤_᧥_᧦_᧧_᧨_᧩_᧪_᧫_᧬_᧭_᧮_᧯_᧱_᧲_᧳_᧴_᧵_᧶_᧷_᧸_᧹_᧺_᧻_᧼_᧽_᧾_᧿'.split('_'),
+    moonStatus: "កើត_រោច".split("_"),
+    moonStatusShort: "ក_រ".split("_"),
+    weekdays: 'អាទិត្យ_ច័ន្ទ_អង្គារ_ពុធ_ព្រហស្បតិ៍_សុក្រ_សៅរ៍'.split('_'),
+    weekdaysShort: 'អា_ច_អ_ព_ព្រ_សុ_ស'.split('_'),
+    weekdaysMin: 'អា_ច_អ_ព_ព្រ_សុ_ស'.split('_'),
+    lunarMonths: "មិគសិរ_បុស្ស_មាឃ_ផល្គុន_ចេត្រ_ពិសាខ_ជេស្ឋ_អាសាឍ_ស្រាពណ៍_ភទ្របទ_អស្សុជ_កក្ដិក_បឋមាសាឍ_ទុតិយាសាឍ".split("_"),
+    animalYear: "ជូត_ឆ្លូវ_ខាល_ថោះ_រោង_ម្សាញ់_មមីរ_មមែ_វក_រកា_ច_កុរ".split("_"),
+    eraYear: "សំរឹទ្ធិស័ក_ឯកស័ក_ទោស័ក_ត្រីស័ក_ចត្វាស័ក_បញ្ចស័ក_ឆស័ក_សប្តស័ក_អដ្ឋស័ក_នព្វស័ក".split("_"),
+    preparse: function (string) {
+      return string.replace(/[១២៣៤៥៦៧៨៩០]/g, function (match) {
+        return numberMap[match];
+      });
+    },
+    postformat: function (string) {
+      return string.replace(/\d/g, function (match) {
+        return symbolMap[match];
+      });
+    }
+  };
+
+})));
+
+
+/***/ }),
+/* 148 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @see http://www.dahlina.com/education/khmer_new_year_time.html?fbclid=IwAR0Eq6US-F0LfplMjKzmiRn7rvPgi31i74Wpv4mNhU034mzdyj-3hYrCA8w
+ * @param jsYear
+ * @returns {{harkun, kromathopol, avaman, bodithey, has366day: *, isAthikameas: *, isChantreathimeas: *, jesthHas30: *, dayLerngSak: number, lunarDateLerngSak: {day: number, month: *}}}
+ */
+
+;(function (global, factory) {
+   true ? module.exports = factory :
+    typeof define === 'function' && define.amd ? define(factory) :
+      global.getSoriyatraLerngSak = factory
+}(this, (function (jsYear) {
+  'use strict';
+
+  return (function (jsYear) {
+
+    let {LunarMonths} = __webpack_require__(130);
+
+    /**
+     * គណនា ហារគុន Kromathopol អវមាន និង បូតិថី
+     * @param jsYear
+     * @returns {{bodithey: number, avaman: number, kromathopol: number, harkun: number}}
+     */
+    function getInfo(jsYear) {
+      let h = 292207 * jsYear + 373;
+      let harkun = Math.floor(h / 800) + 1;
+      let kromathopol = 800 - (h % 800);
+
+      let a = 11 * harkun + 650;
+      let avaman = a % 692;
+      let bodithey = (harkun + Math.floor((a / 692))) % 30;
+      return {
+        harkun,
+        kromathopol,
+        avaman,
+        bodithey
+      }
+    }
+
+    let info = getInfo(jsYear);
+
+    /**
+     * ឆ្នាំចុល្លសករាជដែលមាន៣៦៦ថ្ងៃ
+     * @param jsYear
+     * @returns {boolean}
+     */
+    function getHas366day(jsYear) {
+      let infoOfYear = getInfo(jsYear);
+      return infoOfYear.kromathopol <= 207;
+    }
+
+    /**
+     * រកឆ្នាំអធិកមាស
+     * @param jsYear
+     * @returns {boolean}
+     */
+    function getIsAthikameas(jsYear) {
+      let infoOfYear = getInfo(jsYear);
+      let infoOfNextYear = getInfo(jsYear + 1);
+      return (!(infoOfYear.bodithey === 25 && infoOfNextYear.bodithey === 5) &&
+        (infoOfYear.bodithey > 24 ||
+          infoOfYear.bodithey < 6 ||
+          (infoOfYear.bodithey === 24 &&
+            infoOfNextYear.bodithey === 6
+          )
+        )
+      );
+    }
+
+    /**
+     * រកឆ្នាំចន្ទ្រាធិមាស
+     * @param jsYear
+     * @returns {boolean}
+     */
+    function getIsChantreathimeas(jsYear) {
+      let infoOfYear = getInfo(jsYear);
+      let infoOfNextYear = getInfo(jsYear + 1);
+      let infoOfPreviousYear = getInfo(jsYear - 1);
+      let has366day = getHas366day(jsYear);
+      return ((has366day && infoOfYear.avaman < 127) ||
+        (!(infoOfYear.avaman === 137 &&
+            infoOfNextYear.avaman === 0) &&
+          ((!has366day &&
+              infoOfYear.avaman < 138) ||
+            (infoOfPreviousYear.avaman === 137 &&
+              infoOfYear.avaman === 0
+            )
+          )
+        )
+      );
+    }
+
+    let has366day = getHas366day(jsYear);
+    let isAthikameas = getIsAthikameas(jsYear)
+    let isChantreathimeas = getIsChantreathimeas(jsYear)
+
+    /**
+     * ឆែកមើលថាជាឆ្នាំដែលខែជេស្ឋមាន៣០ថ្ងៃឬទេ
+     * @type {boolean}
+     */
+    let jesthHas30 = (function () {
+      let tmp = isChantreathimeas;
+      if (isAthikameas && isChantreathimeas) {
+        tmp = false;
+      }
+      if (!isChantreathimeas && getIsAthikameas(jsYear - 1) && getIsChantreathimeas(jsYear - 1)) {
+        tmp = true;
+      }
+      return tmp;
+    })();
+
+    /**
+     * រកមើលថាតើថ្ងៃឡើងស័កចំថ្ងៃអ្វី
+     * @type {number}
+     */
+    let dayLerngSak = (info.harkun - 2) % 7;
+
+    /**
+     * គណនារកថ្ងៃឡើងស័ក
+     * @type {{month, day}}
+     */
+    let lunarDateLerngSak = (function () {
+      let bodithey = info.bodithey;
+      if (getIsAthikameas(jsYear - 1) && getIsChantreathimeas(jsYear - 1)) {
+        bodithey = (bodithey + 1) % 30;
+      }
+      return {
+        day: bodithey >= 6 ? bodithey - 1 : bodithey,
+        month: bodithey >= 6 ? LunarMonths.ចេត្រ : LunarMonths.ពិសាខ
+      };
+    })();
+
+    function getSunInfo(sotin) {  // សុទិន
+      let infoOfPreviousYear = getInfo(jsYear - 1);
+      // ១ រាសី = ៣០ អង្សា
+      // ១ អង្សា = ៦០ លិប្ដា
+      let sunAverageAsLibda = (function () {  // មធ្យមព្រះអាទិត្យ គិតជាលិប្ដា
+        let r2 = 800 * sotin + infoOfPreviousYear.kromathopol;
+        let reasey = Math.floor(r2 / 24350); // រាសី
+        let r3 = r2 % 24350;
+        let angsar = Math.floor(r3 / 811); // អង្សា
+        let r4 = r3 % 811;
+        let l1 = Math.floor(r4 / 14);
+        let libda = l1 - 3; // លិប្ដា
+        return (30 * 60 * reasey) + (60 * angsar) + libda;
+      })();
+
+      let leftOver = (function () {
+        let s1 = ((30 * 60 * 2) + (60 * 20));
+        let leftOver = sunAverageAsLibda - s1; // មធ្យមព្រះអាទិត្យ - R2.A20.L0
+        if (sunAverageAsLibda < s1) { // បើតូចជាង ខ្ចី ១២ រាសី
+          leftOver += (30 * 60 * 12)
+        }
+        return leftOver;
+      })();
+
+      let kaen = (function () {
+        return Math.floor(leftOver / (30 * 60));
+      })();
+
+      let lastLeftOver = (function () {
+        let rs = -1;
+        if ([0, 1, 2].includes(kaen)) {
+          rs = kaen;
+        } else if ([3, 4, 5].includes(kaen)) {
+          rs = (30 * 60 * 6) - leftOver; // R6.A0.L0 - leftover
+        } else if ([6, 7, 8].includes(kaen)) {
+          rs = leftOver - (30 * 60 * 6); // leftover - R6.A0.L0
+        } else if ([9, 10, 11].includes(kaen)) {
+          rs = ((30 * 60 * 11) + (60 * 29) + 60) - leftOver; // R11.A29.L60 - leftover
+        }
+        return {
+          reasey: Math.floor(rs / (30 * 60)),
+          angsar: Math.floor((rs % (30 * 60)) / (60)),
+          libda: rs % 60
+        };
+      })();
+
+      let [khan, pouichalip] = (function () { // ខណ្ឌ និង pouichalip
+        if (lastLeftOver.angsar >= 15) {
+          return [
+            2 * lastLeftOver.reasey + 1,
+            60 * (lastLeftOver.angsar - 15) + lastLeftOver.libda
+          ];
+        } else {
+          return [
+            2 * lastLeftOver.reasey,
+            60 * lastLeftOver.angsar + lastLeftOver.libda
+          ];
+        }
+      })();
+
+      let phol = (function () { // phol
+        const chhayaSun = function (khan) {
+          let multiplicities = [35, 32, 27, 22, 13, 5];
+          let chhayas = [0, 35, 67, 94, 116, 129];
+          switch (khan) {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+              return {
+                multiplicity: multiplicities[khan],
+                chhaya: chhayas[khan]
+              }
+            default:
+              return {
+                chhaya: 134
+              }
+          }
+        }
+
+        let val = chhayaSun(khan);
+        let q = Math.floor((pouichalip * val.multiplicity) / 900);
+        return {
+          reasey: 0,
+          angsar: Math.floor((q + val.chhaya) / 60),
+          libda: (q + val.chhaya) % 60
+        }
+      })();
+
+      let sunInaugurationAsLibda = (function () { // សម្ពោធព្រះអាទិត្យ
+        let pholAsLibda = (30 * 60 * phol.reasey) + (60 * phol.angsar) + phol.libda;
+        if (kaen <= 5) {
+          return sunAverageAsLibda - pholAsLibda;
+        } else {
+          return sunAverageAsLibda + pholAsLibda;
+        }
+      })();
+
+      return {
+        sunAverageAsLibda,
+        khan,
+        pouichalip,
+        phol,
+        sunInaugurationAsLibda
+      }
+    }
+
+    let newYearsDaySotins = (function () { // ចំនួនថ្ងៃវ័នបត
+      let sotins = getHas366day(jsYear - 1) ? [363,364,365,366] : [362,363,364,365]; // សុទិន
+      return sotins.map(function (sotin) {
+        let sunInfo = getSunInfo(sotin);
+        return {
+          sotin: sotin,
+          reasey: Math.floor(sunInfo.sunInaugurationAsLibda / (30 * 60)),
+          angsar: Math.floor((sunInfo.sunInaugurationAsLibda % (30 * 60)) / (60)), // អង្សាស្មើសូន្យ គីជាថ្ងៃចូលឆ្នាំ, មួយ ឬ ពីរ ថ្ងៃបន្ទាប់ជាថ្ងៃវ័នបត ហើយ ថ្ងៃចុងក្រោយគីឡើងស័ក
+          libda: sunInfo.sunInaugurationAsLibda % 60,
+        }
+      })
+    })();
+
+    let timeOfNewYear = (function () {
+      let sotinNewYear = newYearsDaySotins.filter(function (sotin) {
+        return sotin.angsar === 0;
+      });
+      if (sotinNewYear.length === 1) {
+        let libda = sotinNewYear[0].libda; // ២៤ ម៉ោង មាន ៦០លិប្ដា
+        let minutes = (24 * 60) - (libda * 24)
+        return {
+          hour: Math.floor(minutes / 60),
+          minute: minutes % 60
+        }
+      } else {
+        Error('Plugin is facing wrong calculation on new years hour');
+      }
+    })();
+
+    return {
+      harkun: info.harkun,
+      kromathopol: info.kromathopol,
+      avaman: info.avaman,
+      bodithey: info.bodithey,
+      has366day, // សុរិយគតិខ្មែរ
+      isAthikameas, // 13 months
+      isChantreathimeas, // 30ថ្ងៃនៅខែជេស្ឋ
+      jesthHas30, // ខែជេស្ឋមាន៣០ថ្ងៃ
+      dayLerngSak, // ថ្ងៃឡើងស័ក ច័ន្ទ អង្គារ ...
+      lunarDateLerngSak, // ថ្ងៃទី ខែ ឡើងស័ក
+      newYearsDaySotins, // សុទិនសម្រាប់គណនាថ្ងៃចូលឆ្នាំ ថ្ងៃវ័នបត និង ថ្ងៃឡើងស័ក
+      timeOfNewYear // ម៉ោងទេវតាចុះ
+    }
+  })(jsYear);
+})));
+
+
+/***/ }),
+/* 149 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__camelCase__ = __webpack_require__(145);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__camelCase__ = __webpack_require__(150);
 
 
 /**
@@ -25248,7 +26316,7 @@ Router.prototype.loadEvents = function loadEvents () {
 
 
 /***/ }),
-/* 145 */
+/* 150 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -25264,7 +26332,7 @@ Router.prototype.loadEvents = function loadEvents () {
 
 
 /***/ }),
-/* 146 */
+/* 151 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -25279,7 +26347,7 @@ Router.prototype.loadEvents = function loadEvents () {
 
 
 /***/ }),
-/* 147 */
+/* 152 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -25294,7 +26362,7 @@ Router.prototype.loadEvents = function loadEvents () {
 
 
 /***/ }),
-/* 148 */
+/* 153 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -25306,7 +26374,7 @@ Router.prototype.loadEvents = function loadEvents () {
 
 
 /***/ }),
-/* 149 */
+/* 154 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

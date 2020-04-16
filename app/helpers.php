@@ -142,7 +142,7 @@ function display_sidebar()
  */
 function mptc_render_layout_class()
 {
-    $layout = get_term_meta(get_queried_object_id(), '_mptc_layout_type', true);
+    $layout = mptc_template_seletor();
     switch ($layout) {
         case '_gallery':
             return 'b-1 row';
@@ -203,9 +203,10 @@ function mptc_posted_on()
 function mptc_download_view()
 {
     $document = get_post_meta(get_the_ID(), '_mptc_document_file', true);
-    
+    $url = get_site_url();
+    strpos($document, $url) !== false ? true : false;
     if (!empty($document)) {
-        $render_d = '<a href="'. $document . '"><span class="oi oi-cloud-download"></span>%s </a>';
+        $render_d = '<a href="'. mptc_check_meta_data() . $document . '"><span class="oi oi-cloud-download"></span>%s </a>';
         printf($render_d, __('ទាញយក', 'sage'));
     } else {
         $render_v = '<a href="' . get_the_permalink() . '"><span class="oi oi-eye"></span>%s </a>';

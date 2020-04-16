@@ -7,6 +7,7 @@
     </div>
     {!! get_search_form(false) !!}
   @endif
+  {{-- <h2>{!! App\mptc_render_layout_class() !!}</h2> --}}
   <div class="{{ App\mptc_render_layout_class() }}" >
     @while (have_posts()) @php the_post() @endphp
       @switch(get_term_meta(get_queried_object_id(), '_mptc_layout_type', true))
@@ -17,7 +18,7 @@
             @include('partials.list-videos')  
               @break
           @case('_gallery')
-            @include('partials.list-docs')
+            @include('partials.list-gallery')
               @break
           @default
             @include('partials.categories')

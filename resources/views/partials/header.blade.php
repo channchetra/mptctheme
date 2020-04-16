@@ -27,6 +27,16 @@
           </div>
           <!-- desktop Cambodia sign -->
           <div class="col-5 logo-wrap text-right my-auto">
+            <time class="mb-3 d-block khmer-time">
+
+              <div class="input-group">
+                <input type="text" id="input-khmer-time" readonly class="form-control" value="" aria-describedby="basic-addon1">
+                <div class="input-group-prepend">
+                  <i onclick="clickCopy.action('input-khmer-time')" id="basic-addon1" class="icofont-copy input-group-text" title="Click to copy"></i>
+                </div>
+              </div>
+
+            </time>
             <!-- desktop top menu -->
             @if (has_nav_menu('primary_navigation'))
               {!! wp_nav_menu(['theme_location' => 'top_navigation', 'container' => 'nav', 'container_class' => 'short-link mb-2']) !!}
