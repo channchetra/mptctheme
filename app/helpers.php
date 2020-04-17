@@ -204,9 +204,15 @@ function mptc_download_view()
 {
     $document = get_post_meta(get_the_ID(), '_mptc_document_file', true);
     $url = get_site_url();
-    strpos($document, $url) !== false ? true : false;
+    $upload_url = wp_upload_dir();
+    /**
+    * ឆែកមើលបើសិន Document file អត់មានផ្ទុក home url
+    * _mptc_document_file ជា custom meta key ដែលកើតមាននៅពេល Active MPTC Field Plugin
+    * ត្រូវបន្ថែម Upload Directory ទៅកាន់ Link ជាមុន (សម្រាប់ទិន្នន័យពី Website ចាស់)
+    */
+    strpos($document, $url) !== false ? $d_link = $document : $d_link = $upload_url['baseurl'].'/'.$document;
     if (!empty($document)) {
-        $render_d = '<a href="'. mptc_check_meta_data() . $document . '"><span class="oi oi-cloud-download"></span>%s </a>';
+        $render_d = '<a href="'. $d_link . '"><span class="oi oi-cloud-download"></span>%s </a>';
         printf($render_d, __('ទាញយក', 'sage'));
     } else {
         $render_v = '<a href="' . get_the_permalink() . '"><span class="oi oi-eye"></span>%s </a>';
