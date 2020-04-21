@@ -17607,14 +17607,19 @@ __webpack_require__(129)(moment);
 // From now on, your moment js is transformed
 
 var today = moment();
-
 console.log(today);
 // Display date today as moment js object
 // For example: moment("2018-12-15T14:49:38.586")
 var khmerDate = today.toLunarDate('ថ្ងៃdN ខែm ឆ្នាំa ព.ស.b');
 // Display khmer date
-// For example: ថ្ងៃសៅរ៍ ៨កើត ខែមិគសិរ ឆ្នាំច សំរឹទ្ធស័ក ពុទ្ធសករាជ ២៥៦២
 document.getElementById('input-khmer-time').value = khmerDate;
+var getTheDateElement = document.querySelectorAll('time.entry-date');
+getTheDateElement.forEach(function (item, index){
+  var theDateAttr = getTheDateElement[index].getAttribute('datetime');
+  var dateToMoment = moment(theDateAttr, moment.ISO_8601);
+  getTheDateElement[index].innerHTML = dateToMoment.toLunarDate('ថ្ងៃdN ខែm ព.ស.b');
+});
+// let theDateElement = document.getElementsByTagName
 // Load Events
 jQuery(document).ready(function () { return routes.loadEvents(); });
 

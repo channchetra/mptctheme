@@ -8,7 +8,7 @@
             <div class="b-item">
                 <div class="b-thumnail"><img src="{{ $item['post_thumbnail'] }}" /></div>
                 <div class="b-title"><a href="{{ $item['permalink'] }}">{{ $item['title'] }}</a></div>
-                <div class="b-date">{{ $item['date'] }}</div>
+                <div class="b-date">{{ App\mptc_posted_on() }}</div>
             </div>
         </div>
     @endforeach

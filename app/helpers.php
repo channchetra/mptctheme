@@ -200,6 +200,18 @@ function mptc_posted_on()
     echo '<span>' . $posted_on . '</span>'; // WPCS: XSS OK.
 }
 
+function mptc_posted_by()
+{
+    $html = '<span>%s <a href="' . esc_url(get_author_posts_url(get_the_author_meta('ID'))) . '" class="fn">' . esc_html(get_the_author()) . '</a></span>';
+    printf($html, __('អត្ថបទដោយ៖', 'sage'));
+}
+
+function mptc_the_posted_view_count()
+{
+    $html = '<span>%s ('. mptc_get_the_posted_view_count().')</span>';
+    printf($html, __('ចំនួនទស្សនា', 'sage'));
+}
+
 function mptc_download_view()
 {
     $document = get_post_meta(get_the_ID(), '_mptc_document_file', true);
@@ -218,37 +230,4 @@ function mptc_download_view()
         $render_v = '<a href="' . get_the_permalink() . '"><span class="oi oi-eye"></span>%s </a>';
         printf($render_v, __('បើកមើល', 'sage'));
     }
-}
-function mptc_posted_by()
-{
-    $html = '<span>%s <a href="' . esc_url(get_author_posts_url(get_the_author_meta('ID'))) . '" class="fn">' . esc_html(get_the_author()) . '</a></span>';
-    printf($html, __('អត្ថបទដោយ', 'sage'));
-}
-
-function mptc_the_posted_view_count()
-{
-    $html = '<span>%s ('. mptc_get_the_posted_view_count().')</span>';
-    printf($html, __('ចំនួនទស្សនា', 'sage'));
-}
-
-function mptc_kilo_mega_giga($number)
-{
-    $number_format = number_format_i18n($number);
-    $exploded = explode(',', $number_format);
-    $count = count($exploded);
-
-    switch ($count) {
-        case 2:
-            $value = number_format_i18n($number/1000, 1).'K';
-            break;
-        case 3:
-            $value = number_format_i18n($number/1000000, 1).'M';
-            break;
-        case 4:
-            $value = number_format_i18n($number/1000000000, 1).'G';
-            break;
-        default:
-            $value = $number;
-    }
-    return $value;
 }

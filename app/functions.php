@@ -7,6 +7,27 @@ use Roots\Sage\Container;
 /**
  * Custom Function for mptctheme
  */
+function mptc_kilo_mega_giga($number)
+{
+    $number_format = number_format_i18n($number);
+    $exploded = explode(',', $number_format);
+    $count = count($exploded);
+
+    switch ($count) {
+        case 2:
+            $value = number_format_i18n($number/1000, 1).'K';
+            break;
+        case 3:
+            $value = number_format_i18n($number/1000000, 1).'M';
+            break;
+        case 4:
+            $value = number_format_i18n($number/1000000000, 1).'G';
+            break;
+        default:
+            $value = $number;
+    }
+    return $value;
+}
 
 function mptc_track_post_views($post_id)
 {
@@ -51,4 +72,20 @@ function mptc_check_pdf_data()
     $document = get_post_meta(get_the_ID(), '_mptc_document_file', true);
     $url = get_site_url();
     return strpos($document, $url) !== false;
+}
+function mptc_cat_listing()
+{
+        
+    $categories = get_categories([
+        'orderby' => 'name',
+        'order'   => 'ASC'
+     ] );
+    $array = array_column($categories, 'name', 'term_id');
+    // print_r ($array);
+    $data = array();
+    foreach( $array as $key => $arr ) {
+        $val = array('key'=>$key,'value'=>$arr);
+        array_push($data, $val);
+    }     
+    return $data;
 }

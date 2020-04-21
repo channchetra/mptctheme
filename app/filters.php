@@ -107,6 +107,7 @@ add_filter('sage/display_sidebar', function ($display) {
     return $display;
 });
 
+// Add Fillter ទៅ Content ដើម្បីបង្ហាញ PDF Views នៅពេលដែល Custom Field _mptc_document_file ត្រូវបានឆែកឃើញថាមាន Data
 add_filter('the_content', function ($doc_content) {
 
     $document = get_post_meta(get_the_ID(), '_mptc_document_file', true);
