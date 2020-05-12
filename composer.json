@@ -42,7 +42,8 @@
     "soberwp/controller": "~2.1.0",
     "squizlabs/php_codesniffer": "*",
     "cmb2/cmb2": "^2.7",
-    "log1x/sage-directives": "^1.1"
+    "log1x/sage-directives": "^1.1",
+    "soberwp/models": "1.1.0-p"
   },
   "require-dev": {
     "roots/sage-installer": "~1.6"

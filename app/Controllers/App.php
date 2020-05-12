@@ -29,6 +29,7 @@ class App extends Controller
             return get_the_archive_title();
         }
         if (is_search()) {
+            /* translators: %s: Search Keyword Text */
             return sprintf(__('Search Results for %s', 'sage'), get_search_query());
         }
         if (is_404()) {
@@ -42,7 +43,7 @@ class App extends Controller
         if (has_post_thumbnail()) {
             $url = get_the_post_thumbnail_url('', $size);
         } else {
-            $url = \App\asset_path('images/'). $size.'.png';
+            $url = get_theme_file_uri().'/resources/assets/images/' . $size.'.png';
         }
         return $url;
     }

@@ -45,22 +45,22 @@
             <!-- h1 class="font-moul khmer-title primary-color inline-block">ព្រះរាជាណាចក្រកម្ពុជា <br/>ជាតិ សាសនា ព្រះមហាក្សត្រ</h1>
             <br/ -->
             <!-- desktop search form -->
-            <form class="form-inline inline-block">
+            <form class="form-inline inline-block" method="get" id="searchform" action="{!! site_url('/') !!}">
               <div class="input-group input-group-sm mb-2">
                 <div class="input-group-prepend primary-background-color">
                   <button class="btn btn-outline" type="submit" id="button-addon1"><span class="oi oi-magnifying-glass"></span></button>
                 </div>
-                <input type="text" class="form-control" placeholder="ស្វែងរក" aria-label="Example text with button addon" aria-describedby="button-addon1">
+              <input type="text" class="form-control" placeholder="{{ __('ស្វែងរក', 'sage') }}" name= "s" id="s" value="{{ the_search_query() }}" aria-label="Example text with button addon" aria-describedby="button-addon1">
               </div>
             </form>
             <!-- desktop polylang -->
             <div class="languages d-inline-block">
               <ul>
-                {{-- @php
+                @php
                     do_action( 'wpml_add_language_selector' )
-                @endphp --}}
-                <li class="active"><a href="#">ខ្មែរ</a></li>
-                <li><a href="#">Eng</a></li>
+                @endphp
+                {{-- <li class="active"><a href="#">ខ្មែរ</a></li>
+                <li><a href="#">Eng</a></li> --}}
               </ul>
             </div>
           </div>

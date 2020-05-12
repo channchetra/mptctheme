@@ -29,18 +29,21 @@ require('@thyrith/momentkh')(moment);
 // From now on, your moment js is transformed
 
 let today = moment();
-console.log(today);
+console.log(document.getElementsByTagName('html')[0].lang);
 // Display date today as moment js object
 // For example: moment("2018-12-15T14:49:38.586")
 let khmerDate = today.toLunarDate('ថ្ងៃdN ខែm ឆ្នាំa ព.ស.b');
 // Display khmer date
 document.getElementById('input-khmer-time').value = khmerDate;
-const getTheDateElement = document.querySelectorAll('time.entry-date');
-getTheDateElement.forEach(function (item, index){
-  let theDateAttr = getTheDateElement[index].getAttribute('datetime');
-  let dateToMoment = moment(theDateAttr, moment.ISO_8601);
-  getTheDateElement[index].innerHTML = dateToMoment.toLunarDate('ថ្ងៃdN ខែm ព.ស.b');
-});
+if(document.getElementsByTagName('html')[0].lang == 'km-KH'){
+  console.log(true);
+  const getTheDateElement = document.querySelectorAll('time.entry-date');
+  getTheDateElement.forEach(function (item, index){
+    let theDateAttr = getTheDateElement[index].getAttribute('datetime');
+    let dateToMoment = moment(theDateAttr, moment.ISO_8601);
+    getTheDateElement[index].innerHTML = dateToMoment.toLunarDate('ថ្ងៃdN ខែm ព.ស.b');
+  });
+}
 // let theDateElement = document.getElementsByTagName
 // Load Events
 jQuery(document).ready(() => routes.loadEvents());

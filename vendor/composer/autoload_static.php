@@ -8,11 +8,12 @@ class ComposerStaticInit1062d9138cec3503644906d214bf436b
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
-        '72579e7bd17821bb1321b87411366eae' => __DIR__ . '/..' . '/illuminate/support/helpers.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
+        '72579e7bd17821bb1321b87411366eae' => __DIR__ . '/..' . '/illuminate/support/helpers.php',
         '306c972fefb706292e68f312a9e19301' => __DIR__ . '/..' . '/log1x/sage-directives/src/Directives.php',
         '2c3fde97f0f2b20397a293f71447ab39' => __DIR__ . '/..' . '/log1x/sage-directives/src/Utilities.php',
         'b50336562d531777993d90ca775abd88' => __DIR__ . '/..' . '/soberwp/controller/controller.php',
+        '90abbbd1b4ec36aebe50d92b3788f45e' => __DIR__ . '/..' . '/soberwp/models/models.php',
         '109cfe274d26fafa8d9bcc439dc529e8' => __DIR__ . '/..' . '/cmb2/cmb2/init.php',
     );
 
@@ -22,11 +23,14 @@ class ComposerStaticInit1062d9138cec3503644906d214bf436b
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Contracts\\' => 18,
+            'Symfony\\Component\\Yaml\\' => 23,
             'Symfony\\Component\\Translation\\' => 30,
             'Symfony\\Component\\Process\\' => 26,
             'Symfony\\Component\\Finder\\' => 25,
             'Symfony\\Component\\Debug\\' => 24,
             'Symfony\\Component\\Console\\' => 26,
+            'Sober\\Models\\Model\\' => 19,
+            'Sober\\Models\\' => 13,
             'Sober\\Controller\\' => 17,
         ),
         'R' => 
@@ -40,6 +44,10 @@ class ComposerStaticInit1062d9138cec3503644906d214bf436b
             'Psr\\SimpleCache\\' => 16,
             'Psr\\Log\\' => 8,
             'Psr\\Container\\' => 14,
+        ),
+        'N' => 
+        array (
+            'Noodlehaus\\' => 11,
         ),
         'I' => 
         array (
@@ -84,6 +92,10 @@ class ComposerStaticInit1062d9138cec3503644906d214bf436b
         array (
             0 => __DIR__ . '/..' . '/symfony/contracts',
         ),
+        'Symfony\\Component\\Yaml\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/yaml',
+        ),
         'Symfony\\Component\\Translation\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/translation',
@@ -103,6 +115,14 @@ class ComposerStaticInit1062d9138cec3503644906d214bf436b
         'Symfony\\Component\\Console\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/console',
+        ),
+        'Sober\\Models\\Model\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/soberwp/models/src/Model',
+        ),
+        'Sober\\Models\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/soberwp/models/src',
         ),
         'Sober\\Controller\\' => 
         array (
@@ -131,6 +151,10 @@ class ComposerStaticInit1062d9138cec3503644906d214bf436b
         'Psr\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
+        ),
+        'Noodlehaus\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/hassankhan/config/src',
         ),
         'Illuminate\\View\\' => 
         array (

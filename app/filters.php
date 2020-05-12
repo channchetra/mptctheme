@@ -101,11 +101,13 @@ add_filter('sage/display_sidebar', function ($display) {
       is_single(),
       is_404(),
       is_search(),
-      is_page()
+      is_page(),
+      is_archive()
     ]);
 
     return $display;
 });
+
 
 // Add Fillter ទៅ Content ដើម្បីបង្ហាញ PDF Views នៅពេលដែល Custom Field _mptc_document_file ត្រូវបានឆែកឃើញថាមាន Data
 add_filter('the_content', function ($doc_content) {
@@ -120,7 +122,16 @@ add_filter('the_content', function ($doc_content) {
     */
     strpos($document, $url) !== false ? $d_link = $document : $d_link = $upload_url['baseurl'].'/'.$document;
     if (!empty($document)) {
-        $doc_content = '<iframe width="100%" height="1000" style="border: none;" src="https://docs.google.com/viewer?url=' . $d_link . '&amp;embedded=true"></iframe>';
+        $doc_content .= '<iframe width="100%" height="1000" style="border: none;" src="https://docs.google.com/viewer?url=' . $d_link . '&amp;embedded=true"></iframe>';
     }
     return $doc_content;
 });
+
+add_filter('widget_title', 'do_shortcode');
+
+
+add_shortcode('span', 'ng_shortcode_spantag');
+function ng_shortcode_spantag($attr, $content)
+{
+    return '<span>'. $content . '</span>';
+}

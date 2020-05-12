@@ -56,6 +56,7 @@ if (!class_exists('Roots\\Sage\\Container')) {
 array_map(function ($file) use ($sage_error) {
     $file = "../app/{$file}.php";
     if (!locate_template($file, true, true)) {
+        /* translators: %s: Erro Code */
         $sage_error(sprintf(__('Error locating <code>%s</code> for inclusion.', 'sage'), $file), 'File not found');
     }
 }, ['helpers', 'setup', 'filters', 'admin', 'functions']);
@@ -90,3 +91,32 @@ Container::getInstance()
             'view' => require dirname(__DIR__).'/config/view.php',
         ]);
     }, true);
+function wporg_register_taxonomy_course()
+{
+    $labels = [
+    'name'              => _x('Courses', 'taxonomy general name'),
+    'singular_name'     => _x('Course', 'taxonomy singular name'),
+    'search_items'      => __('Search Courses'),
+    'all_items'         => __('All Courses'),
+    'parent_item'       => __('Parent Course'),
+    'parent_item_colon' => __('Parent Course:'),
+    'edit_item'         => __('Edit Course'),
+    'update_item'       => __('Update Course'),
+    'add_new_item'      => __('Add New Course'),
+    'new_item_name'     => __('New Course Name'),
+    'menu_name'         => __('Course'),
+    ];
+    $args = [
+    'hierarchical'      => true, // make it hierarchical (like categories)
+    'labels'            => $labels,
+    'show_ui'           => true,
+    'show_admin_column' => true,
+    'query_var'         => true,
+    // 'show_in_rest'      => ture,
+    'rewrite'           => ['slug' => 'course'],
+    ];
+    register_taxonomy('course', ['post'], $args);
+}
+add_action('init', 'wporg_register_taxonomy_course');
+
+// add_action('wp', function(){ echo '<pre>';print_r($GLOBALS['wp_filter']); echo '</pre>';exit; } );

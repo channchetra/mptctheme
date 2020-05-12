@@ -31,6 +31,8 @@
     <small class="copyright">ឆ្នាំ២០២០ &copy; រក្សាសិទ្ធិគ្រប់យ៉ាងដោយ៖ ក្រសួងប្រៃសណីយ៍ និង ទូរគមនាគមន៍ | អភិវឌ្ឍដោយ អគ្គនាយកដ្ឌានបច្ចេកវិទ្យា គមនាគមន៍ និងព័ត៌មាន</small>
   </div>
 </footer>
+
+{{-- {{ dd(App\mptc_cat_listing('course')) }} --}}
 {{-- <footer class="content-info">
   <div class="container">
     @php dynamic_sidebar('sidebar-footer') @endphp

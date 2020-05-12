@@ -1,11 +1,13 @@
-<article @php post_class() @endphp>
-  <header>
-    <h2 class="entry-title"><a href="{{ get_permalink() }}">{!! get_the_title() !!}</a></h2>
-    @if (get_post_type() === 'post')
-      @include('partials/entry-meta')
-    @endif
-  </header>
-  <div class="entry-summary">
-    @php the_excerpt() @endphp
+<div class="b-item-wrap">
+  <div class="b-item row">
+      <div class="b-title-wrap col-11">
+          <div class="b-title margin-bottom-15"><a href="@permalink">@title</a></div>
+          <div class="b-date" style="margin-bottom: 0">
+              <span>@excerpt</span>
+          </div>
+          <div class="b-date padding-top-15">
+              {!! App\mptc_posted_on() !!}
+          </div>
+      </div>
   </div>
-</article>
+</div>

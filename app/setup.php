@@ -92,8 +92,8 @@ add_action('widgets_init', function () {
     $config = [
         'before_widget' => '',
         'after_widget'  => '',
-        'before_title'  => '<div class="block-title2 primary-color">',
-        'after_title'   => '</div>'
+        'before_title'  => '<div class="block-title2 primary-color"><span class="primary-color">',
+        'after_title'   => '</span></div>'
     ];
     register_sidebar([
         'name'          => __('Primary', 'sage'),
@@ -141,4 +141,7 @@ add_action('after_setup_theme', function () {
     sage('blade')->compiler()->directive('asset', function ($asset) {
         return "<?= " . __NAMESPACE__ . "\\asset_path({$asset}); ?>";
     });
+});
+add_action('after_setup_theme', function () {
+    load_theme_textdomain('sage', get_template_directory() . '/lang');
 });

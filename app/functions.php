@@ -73,19 +73,75 @@ function mptc_check_pdf_data()
     $url = get_site_url();
     return strpos($document, $url) !== false;
 }
-function mptc_cat_listing()
+function mptc_cat_listing($name = 'category')
 {
-        
-    $categories = get_categories([
-        'orderby' => 'name',
-        'order'   => 'ASC'
-     ] );
-    $array = array_column($categories, 'name', 'term_id');
-    // print_r ($array);
-    $data = array();
-    foreach( $array as $key => $arr ) {
-        $val = array('key'=>$key,'value'=>$arr);
-        array_push($data, $val);
-    }     
+    $taxonomies = get_terms(
+        [
+            'taxonomy' => $name,
+            'hide_empty' => false
+        ]
+    );
+     
+    if (!empty($taxonomies)) :
+        $data = [];
+        foreach ($taxonomies as $category) {
+            $new_arr = [
+                'label' => $category->name,
+                'value' => $category->term_id
+            ];
+            array_push($data, $new_arr);
+        }
+    endif;
     return $data;
+}
+/**
+ * Method ធ្វើការទាញយក youtube videos ID ពី Link ដែលបានបញ្ចូល
+ *
+ * @param [type] $youtube_video_url
+ * @return void
+ */
+function GetVideo_ID($youtube_video_url) 
+{
+    /**
+    * ប្រភេទ Links ដែលហ្នឹងអាចទទួល
+    * http://youtu.be/ID
+    * http://www.youtube.com/embed/ID
+    * http://www.youtube.com/watch?v=ID
+    * http://www.youtube.com/?v=ID
+    * http://www.youtube.com/v/ID
+    * http://www.youtube.com/e/ID
+    * http://www.youtube.com/user/username#p/u/11/ID
+    * http://www.youtube.com/leogopal#p/c/playlistID/0/ID
+    * http://www.youtube.com/watch?feature=player_embedded&v=ID
+    * http://www.youtube.com/?feature=player_embedded&v=ID
+    */
+    /** Pattern ដែលដំណើរការ */
+    /* $pattern = 
+        '%                 
+        (?:youtube                    # Match any youtube url www or no www , https or no https
+        (?:-nocookie)?\.com/          # allows for the nocookie version too.
+        (?:[^/]+/.+/                  # Once we have that, find the slashes
+        |(?:v|e(?:mbed)?)/|.*[?&]v=)  # Check if its a video or if embed 
+        |youtu\.be/)                  # Allow short URLs
+        ([^"&?/ ]{11})                # Once its found check that its 11 chars.
+        %i'; */
+    $pattern = '%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i';
+    // Checks if it matches a pattern and returns the value
+    if (preg_match($pattern, $youtube_video_url, $match)) {
+        return $match[1];
+    }
+    // if no match return false.
+    return false;
+}
+/**
+ * Function ធ្វើការបង្ហាញចេញនូវ Iframe ដែល Embed youtube Video from _mptc_video_link field
+ *
+ * @param [type] $vdo_link
+ * @return void
+ */
+function mptc_video_frame( $vdo_link )
+{
+    $vdo_id = GetVideo_ID($vdo_link);
+    $render = '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/' . $vdo_id . '" frameborder="0" allowfullscreen=""></iframe>';
+    return $render;
 }
