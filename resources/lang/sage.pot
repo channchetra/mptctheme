@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-14 18:49+0700\n"
+"POT-Creation-Date: 2020-05-15 17:24+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,52 +48,6 @@ msgstr ""
 #: resources/functions.php:60
 #, php-format
 msgid "Error locating <code>%s</code> for inclusion."
-msgstr ""
-
-#: resources/functions.php:97
-msgctxt "taxonomy general name"
-msgid "Courses"
-msgstr ""
-
-#: resources/functions.php:98
-msgctxt "taxonomy singular name"
-msgid "Course"
-msgstr ""
-
-#: resources/functions.php:99
-msgid "Search Courses"
-msgstr ""
-
-#: resources/functions.php:100
-msgid "All Courses"
-msgstr ""
-
-#: resources/functions.php:101
-msgid "Parent Course"
-msgstr ""
-
-#: resources/functions.php:102
-msgid "Parent Course:"
-msgstr ""
-
-#: resources/functions.php:103
-msgid "Edit Course"
-msgstr ""
-
-#: resources/functions.php:104
-msgid "Update Course"
-msgstr ""
-
-#: resources/functions.php:105
-msgid "Add New Course"
-msgstr ""
-
-#: resources/functions.php:106
-msgid "New Course Name"
-msgstr ""
-
-#: resources/functions.php:107
-msgid "Course"
 msgstr ""
 
 #: app/filters.php:33
