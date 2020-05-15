@@ -7,8 +7,8 @@ namespace Composer\Autoload;
 class ComposerStaticInit1062d9138cec3503644906d214bf436b
 {
     public static $files = array (
-        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
+        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '72579e7bd17821bb1321b87411366eae' => __DIR__ . '/..' . '/illuminate/support/helpers.php',
         '306c972fefb706292e68f312a9e19301' => __DIR__ . '/..' . '/log1x/sage-directives/src/Directives.php',
         '2c3fde97f0f2b20397a293f71447ab39' => __DIR__ . '/..' . '/log1x/sage-directives/src/Utilities.php',
@@ -25,19 +25,15 @@ class ComposerStaticInit1062d9138cec3503644906d214bf436b
             'Symfony\\Contracts\\' => 18,
             'Symfony\\Component\\Yaml\\' => 23,
             'Symfony\\Component\\Translation\\' => 30,
-            'Symfony\\Component\\Process\\' => 26,
             'Symfony\\Component\\Finder\\' => 25,
             'Symfony\\Component\\Debug\\' => 24,
-            'Symfony\\Component\\Console\\' => 26,
             'Sober\\Models\\Model\\' => 19,
             'Sober\\Models\\' => 13,
             'Sober\\Controller\\' => 17,
         ),
         'R' => 
         array (
-            'Roots\\Sage\\Installer\\' => 21,
             'Roots\\Sage\\' => 11,
-            'Ramsey\\Uuid\\' => 12,
         ),
         'P' => 
         array (
@@ -57,7 +53,6 @@ class ComposerStaticInit1062d9138cec3503644906d214bf436b
             'Illuminate\\Events\\' => 18,
             'Illuminate\\Contracts\\' => 21,
             'Illuminate\\Container\\' => 21,
-            'Illuminate\\Console\\' => 19,
             'Illuminate\\Config\\' => 18,
         ),
         'D' => 
@@ -100,10 +95,6 @@ class ComposerStaticInit1062d9138cec3503644906d214bf436b
         array (
             0 => __DIR__ . '/..' . '/symfony/translation',
         ),
-        'Symfony\\Component\\Process\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/process',
-        ),
         'Symfony\\Component\\Finder\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/finder',
@@ -111,10 +102,6 @@ class ComposerStaticInit1062d9138cec3503644906d214bf436b
         'Symfony\\Component\\Debug\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/debug',
-        ),
-        'Symfony\\Component\\Console\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/console',
         ),
         'Sober\\Models\\Model\\' => 
         array (
@@ -128,17 +115,9 @@ class ComposerStaticInit1062d9138cec3503644906d214bf436b
         array (
             0 => __DIR__ . '/..' . '/soberwp/controller/src',
         ),
-        'Roots\\Sage\\Installer\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/roots/sage-installer/src',
-        ),
         'Roots\\Sage\\' => 
         array (
             0 => __DIR__ . '/..' . '/roots/sage-lib',
-        ),
-        'Ramsey\\Uuid\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/ramsey/uuid/src',
         ),
         'Psr\\SimpleCache\\' => 
         array (
@@ -179,10 +158,6 @@ class ComposerStaticInit1062d9138cec3503644906d214bf436b
         'Illuminate\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/illuminate/container',
-        ),
-        'Illuminate\\Console\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/illuminate/console',
         ),
         'Illuminate\\Config\\' => 
         array (
