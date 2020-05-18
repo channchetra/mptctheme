@@ -50,7 +50,9 @@
                 <div class="input-group-prepend primary-background-color">
                   <button class="btn btn-outline" type="submit" id="button-addon1"><span class="oi oi-magnifying-glass"></span></button>
                 </div>
-              <input type="text" class="form-control" placeholder="{{ __('ស្វែងរក', 'sage') }}" name= "s" id="s" value="{{ the_search_query() }}" aria-label="Example text with button addon" aria-describedby="button-addon1">
+              <input type="text" class="form-control" placeholder="@php
+                  esc_attr_e('ស្វែងរក', 'sage');
+              @endphp" name= "s" id="s" value="{{ the_search_query() }}" aria-label="Example text with button addon" aria-describedby="button-addon1">
               </div>
             </form>
             <!-- desktop polylang -->
