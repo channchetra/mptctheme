@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-18 17:10+0700\n"
+"POT-Creation-Date: 2020-05-18 17:19+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -144,6 +144,11 @@ msgstr ""
 
 #: resources/views/partials/header.blade.php:25
 msgid "MINISTRY OF POSTS<br/>AND TELECOMMUNICATIONS"
+msgstr ""
+
+#: resources/views/partials/header.blade.php:54
+#: resources/views/partials/header-mobile.blade.php:25
+msgid "ស្វែងរក"
 msgstr ""
 
 #: resources/views/partials/comments.blade.php:21
