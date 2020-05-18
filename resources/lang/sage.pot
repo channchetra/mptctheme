@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-15 17:24+0700\n"
+"POT-Creation-Date: 2020-05-18 17:10+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -51,7 +51,7 @@ msgid "Error locating <code>%s</code> for inclusion."
 msgstr ""
 
 #: app/filters.php:33
-msgid "Continued"
+msgid "អានបន្ត"
 msgstr ""
 
 #: app/setup.php:58
@@ -62,11 +62,15 @@ msgstr ""
 msgid "Top Navigation"
 msgstr ""
 
-#: app/setup.php:99
+#: app/setup.php:60
+msgid "Footer Navigation"
+msgstr ""
+
+#: app/setup.php:100
 msgid "Primary"
 msgstr ""
 
-#: app/setup.php:103
+#: app/setup.php:104
 msgid "Footer"
 msgstr ""
 
@@ -161,6 +165,10 @@ msgstr ""
 
 #: resources/views/partials/relateds.blade.php:2
 msgid "ព័ត៌មានជាប់ទាក់ទង"
+msgstr ""
+
+#: resources/views/partials/footer.blade.php:6
+msgid "តាមដានលើបណ្ដាញសង្គម"
 msgstr ""
 
 #: resources/views/partials/entry-meta.blade.php:13
