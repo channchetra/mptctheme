@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-15 17:24+0700\n"
-"PO-Revision-Date: 2020-05-15 17:35+0700\n"
+"POT-Creation-Date: 2020-05-18 17:19+0700\n"
+"PO-Revision-Date: 2020-05-18 17:25+0700\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -52,7 +52,7 @@ msgid "Error locating <code>%s</code> for inclusion."
 msgstr ""
 
 #: app/filters.php:33
-msgid "Continued"
+msgid "អានបន្ត"
 msgstr ""
 
 #: app/setup.php:58
@@ -63,11 +63,15 @@ msgstr ""
 msgid "Top Navigation"
 msgstr ""
 
-#: app/setup.php:99
+#: app/setup.php:60
+msgid "Footer Navigation"
+msgstr ""
+
+#: app/setup.php:100
 msgid "Primary"
 msgstr ""
 
-#: app/setup.php:103
+#: app/setup.php:104
 msgid "Footer"
 msgstr ""
 
@@ -83,15 +87,15 @@ msgstr "Posted by:"
 
 #: app/helpers.php:212
 msgid "ចំនួនទស្សនា"
-msgstr ""
+msgstr "Views"
 
 #: app/helpers.php:228
 msgid "ទាញយក"
-msgstr ""
+msgstr "Download"
 
 #: app/helpers.php:231
 msgid "បើកមើល"
-msgstr ""
+msgstr "Read document"
 
 #: app/Controllers/App.php:26
 msgid "Latest Posts"
@@ -108,23 +112,23 @@ msgstr ""
 
 #: app/Controllers/breadcrumbs.php:65
 msgid "ទំព័រដើម"
-msgstr ""
+msgstr "Home"
 
 #: app/Controllers/breadcrumbs.php:126
 msgid "លទ្ធផលស្វែងរកនៃពាក្យ៖ "
-msgstr ""
+msgstr "Search result for: "
 
 #: app/Controllers/breadcrumbs.php:137
 msgid "អត្ថបទដែលបានបង្ហោះដោយ ៖ "
-msgstr ""
+msgstr "Posted by:"
 
 #: app/Controllers/breadcrumbs.php:141
 msgid "ទំព័រមានបញ្ហា"
-msgstr ""
+msgstr "Page not found"
 
 #: app/Controllers/breadcrumbs.php:146
 msgid "ទំព័រទី៖"
-msgstr "Page"
+msgstr "Pages:"
 
 #: resources/views/index.blade.php:7 resources/views/category.blade.php:6
 #: resources/views/archive.blade.php:6 resources/views/search.blade.php:8
@@ -137,11 +141,16 @@ msgstr ""
 
 #: resources/views/partials/header.blade.php:24
 msgid "ក្រសួងប្រៃសណីយ៍<br/> និងទូរគមនាគមន៍"
-msgstr "Ministry of Post and Telecommunications"
+msgstr ""
 
 #: resources/views/partials/header.blade.php:25
 msgid "MINISTRY OF POSTS<br/>AND TELECOMMUNICATIONS"
 msgstr ""
+
+#: resources/views/partials/header.blade.php:54
+#: resources/views/partials/header-mobile.blade.php:25
+msgid "ស្វែងរក"
+msgstr "Search"
 
 #: resources/views/partials/comments.blade.php:21
 msgid "&larr; Older comments"
@@ -162,7 +171,11 @@ msgstr ""
 
 #: resources/views/partials/relateds.blade.php:2
 msgid "ព័ត៌មានជាប់ទាក់ទង"
-msgstr ""
+msgstr "Related Posts"
+
+#: resources/views/partials/footer.blade.php:6
+msgid "តាមដានលើបណ្ដាញសង្គម"
+msgstr "Follow us"
 
 #: resources/views/partials/entry-meta.blade.php:13
 msgid "Share"

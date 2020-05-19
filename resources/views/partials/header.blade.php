@@ -4,11 +4,12 @@
       <div class="nav-button inline-block vertical-align-middle">
         <span class="oi oi-menu nav-icon primary-color"></span>
       </div>
-      <a href="{{ home_url('/') }}" class="sm-logo inline-block vertical-align-middle">
+      <a href="{{ $ptc_home_url }}" class="sm-logo inline-block vertical-align-middle">
         <img src="{{ $logo_url }}" />
       </a>
       <div class="sm-title inline-block vertical-align-middle primary-color">
-        <h1 class="font-moul">{{ get_bloginfo('name', 'display') }}</h1>
+        <h1 class="font-moul">{{ $site_name }}</h1>
+        <small>{{ $site_description }}</small>
       </div>
     </div>
     <!-- desktop header -->
@@ -17,7 +18,7 @@
         <div class="row">
           <!-- desktop logo and site title -->
           <div class="col-7">
-            <a href="{{ home_url('/') }}" class="lg-logo inline-block vertical-align-middle">
+            <a href="{{ $ptc_home_url }}" class="lg-logo inline-block vertical-align-middle">
                <img src="{{ $logo_url }}" />
             </a>
             <div class="lg-title inline-block vertical-align-middle primary-color">
@@ -45,13 +46,13 @@
             <!-- h1 class="font-moul khmer-title primary-color inline-block">ព្រះរាជាណាចក្រកម្ពុជា <br/>ជាតិ សាសនា ព្រះមហាក្សត្រ</h1>
             <br/ -->
             <!-- desktop search form -->
-            <form class="form-inline inline-block" method="get" id="searchform" action="{!! site_url('/') !!}">
+            <form class="form-inline inline-block" method="get" id="searchform" action="{!! $ptc_home_url !!}">
               <div class="input-group input-group-sm mb-2">
                 <div class="input-group-prepend primary-background-color">
                   <button class="btn btn-outline" type="submit" id="button-addon1"><span class="oi oi-magnifying-glass"></span></button>
                 </div>
               <input type="text" class="form-control" placeholder="{{
-                  esc_attr_e('ស្វែងរក', 'sage');
+                  esc_attr_e('ស្វែងរក', 'sage')
               }}" name= "s" id="s" value="{{ the_search_query() }}" aria-label="Example text with button addon" aria-describedby="button-addon1">
               </div>
             </form>

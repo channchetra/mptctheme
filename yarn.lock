@@ -5138,7 +5138,7 @@ jpegtran-bin@^3.0.0:
     bin-wrapper "^3.0.0"
     logalot "^2.0.0"
 
-jquery@^3.3.1, jquery@^3.4.1:
+jquery@^3.3.1, jquery@^3.5.1:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.5.1.tgz#d7b4d08e1bfdb86ad2f1a3d039ea17304717abb5"
   integrity sha512-XwIBPqcMn57FxfT+Go5pzySnm4KWkT1Tv7gjrpT1srtf8Weynl6R273VJ5GjkRb51IzMp5nbaPjJXMWeju2MKg==
@@ -6088,10 +6088,10 @@ mozjpeg@^5.0.0:
 
 mptchtml@sokmean-mptc/mptchtml:
   version "1.0.0"
-  resolved "https://codeload.github.com/sokmean-mptc/mptchtml/tar.gz/ccf8b0f08d517ba8345ce61420544be46e6665ce"
+  resolved "https://codeload.github.com/sokmean-mptc/mptchtml/tar.gz/76b4e1cee8d5758b690b74f56fb11d0945412455"
   dependencies:
     bootstrap "^4.4.1"
-    jquery "^3.4.1"
+    jquery "^3.5.1"
     open-iconic "^1.1.1"
     popper.js "^1.16.1"
     slick-carousel "^1.8.1"

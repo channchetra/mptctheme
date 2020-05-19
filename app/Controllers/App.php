@@ -10,6 +10,10 @@ class App extends Controller
     {
         return get_bloginfo('name');
     }
+    public function siteDescription()
+    {
+        return get_bloginfo('description');
+    }
     public function logoUrl()
     {
         if (has_custom_logo()) {
@@ -46,5 +50,13 @@ class App extends Controller
             $url = get_theme_file_uri().'/resources/assets/images/' . $size.'.png';
         }
         return $url;
+    }
+    public function ptcHomeUrl()
+    {
+        if (function_exists('pll_home_url')) {
+            return pll_home_url();
+        } else {
+            return get_home_url();
+        }
     }
 }
