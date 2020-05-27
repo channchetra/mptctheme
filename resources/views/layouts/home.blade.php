@@ -1,12 +1,12 @@
 <!doctype html>
 <html class="responsive" {!! get_language_attributes() !!}>
   @include('partials.head')
-  <body>
+  <body data-spy="scroll" data-target="#menu-tab">
     @php do_action('get_header') @endphp
     <div class="wrapper">
       @include('partials.header-mobile')
       @include('partials.header')
-      @include('partials.marquee')
+      {{-- @include('partials.marquee') --}}
       <div class="content">
         @yield('content')
       </div>

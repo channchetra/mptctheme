@@ -6088,7 +6088,7 @@ mozjpeg@^5.0.0:
 
 mptchtml@sokmean-mptc/mptchtml:
   version "1.0.0"
-  resolved "https://codeload.github.com/sokmean-mptc/mptchtml/tar.gz/76b4e1cee8d5758b690b74f56fb11d0945412455"
+  resolved "https://codeload.github.com/sokmean-mptc/mptchtml/tar.gz/557cf6a6ac5b3cf8165937ca303b47d9bf99b1eb"
   dependencies:
     bootstrap "^4.4.1"
     jquery "^3.5.1"

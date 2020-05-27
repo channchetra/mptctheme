@@ -160,7 +160,7 @@ function mptc_thumbnail($size = 'post-thumbnail')
     if (has_post_thumbnail()) {
         $url = get_the_post_thumbnail_url('', $size);
     } else {
-        $url = get_theme_file_path().'/resources/assets/images/' . $size.'.png';
+        $url = get_theme_file_uri() . '/resources/assets/images/' . $size.'.png';
     }
     return $url;
 }

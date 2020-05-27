@@ -96,10 +96,14 @@ class Breadcrumbs extends Controller
                 $breadcrumb_output .= '<li><a href="' . get_month_link(get_the_time('Y'), get_the_time('m')) . '">' . get_the_time('F') . '</a></li>';
             } elseif (is_year()) {
                 $breadcrumb_output .= '<li><a href="' . get_year_link(get_the_time('Y')) . '">' . get_the_time('Y') . '</a></li>';
-            } elseif (is_single() && !is_attachment()) {
+            } elseif (is_single() && !is_attachment() && !is_singular(['service', 'book'])) {
                 $cat = get_the_category();
                 $cat = $cat[0];
                 $breadcrumb_output .= self::getTermParentsList($cat, 'category');
+            } elseif (is_singular(['service', 'book']) && !is_attachment()) {
+                $the_term_id = wp_get_post_terms($post->ID, 'sector', array( "fields" => "ids" ));
+                $breadcrumb_output .= self::getTermParentsList($the_term_id, 'sector');
+                $breadcrumb_output .= 'Hello Terming';
             } elseif (is_attachment()) {
                 $parent = get_post($post->post_parent);
                 $cat = get_the_category($parent->ID);

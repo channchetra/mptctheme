@@ -4,9 +4,12 @@
   <body>
     @php do_action('get_header') @endphp
     <div class="wrapper">
-        @include('partials.header-mobile')
         @include('partials.header')
-        @include('partials.marquee')
+        <div class="content">
+          <div class="container p-0">
+            {!! get_search_form() !!}
+          </div>
+        </div>
         @include('partials.breadcrum')
         <div class="content">
           <div class="container plr-lg-30">
@@ -28,7 +31,6 @@
     @php do_action('get_footer') @endphp
         <div class="content">
           @include('partials.footer')
-          {{-- @include('partials.responsive-switcher') --}}
         </div>
     </div>
     <!--End of Wrapper -->

@@ -59,4 +59,69 @@ class App extends Controller
             return get_home_url();
         }
     }
+    public static function homeurl() //fix for some case global directive don't work
+    {
+        if (function_exists('pll_home_url')) {
+            return pll_home_url();
+        } else {
+            return get_home_url();
+        }
+    }
+    public function langSwitcher()
+    {
+        if (class_exists('SitePress')) {
+            $languages = icl_get_languages('skip_missing=0');
+            if (1 < count($languages)) {
+                foreach ($languages as $l) {
+                    $s_flag = get_theme_file_uri().'/resources/assets/images/' . $l['language_code'].'.jpg';
+                    $l_flag = get_theme_file_uri().'/resources/assets/images/' . $l['language_code'].'@2x.jpg';
+                    if (!$l['active']) {
+                        $langs[] = '<li><a class="lang-btn" href="' . $l['url']. '"><img style="height: 35px;" srcset="' . $l_flag . '" src="'. $s_flag . '">' . $l['translated_name'] . '</a></li>';
+                    }
+                }
+                return join(', ', $langs);
+            }
+        } elseif (function_exists('pll_the_languages')) {
+            // Gets the pll_the_languages() raw code
+            $languages = pll_the_languages(array(
+            'hide_if_no_translation' => 1,
+            'raw'                    => true
+            ));
+
+            $output = '';
+
+            // Checks if the $languages is not empty
+            if (! empty($languages)) {
+                // Creates the $output variable with languages container
+                $output = '';
+                // Runs the loop through all languages
+                foreach ($languages as $language) {
+                     // Variables containing language data
+                    $id             = $language['id'];
+                    $slug           = $language['name'];
+                    $url            = $language['url'];
+                    $current        = $language['current_lang'] ? ' languages__item--current' : '';
+                    $no_translation = $language['no_translation'];
+
+                    // Checks if the page has translation in this language
+                    if (! $no_translation) {
+                          // Check if it's current language
+                        $small = get_theme_file_uri().'/resources/assets/images/' . $language['slug'].'.jpg';
+                        $big = get_theme_file_uri().'/resources/assets/images/' . $language['slug'].'@2x.jpg';
+                        if ($current) {
+                            // Output the language in a <span> tag so it's not clickable
+                            $output .= '<li class="list-inline-item"><a href="' . $url . '"><img style="height: 35px;" srcset="'. $big .'" src="'. $small. '">' . $slug . '</a></li>';
+                        } else {
+                            // Output the language in an anchor tag
+                            $output .= '<li class="list-inline-item"><a href="' . $url . '"><img style="height: 35px;" srcset="'. $big .'" src="'. $small. '">' . $slug . '</a></li>';
+                        }
+                    }
+                }
+            }
+
+            return $output;
+        } else {
+            return __('No Language Plugin installed', 'sage');
+        }
+    }
 }

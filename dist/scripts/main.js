@@ -28328,7 +28328,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /* 144 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(jQuery) {jQuery(document).ready(function() {
+/* WEBPACK VAR INJECTION */(function(jQuery, $) {jQuery(document).ready(function() {
 			
     // switching display mode responsive and non-responsive
     var key = 'display_mode';
@@ -28357,11 +28357,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         location.reload();
     });
     
-    // action on responsive and mobile mode
-    jQuery('.nav-button').on('click', function() {
-        jQuery('.content').toggleClass('isOpen');
-        jQuery(this).find(".nav-icon").toggleClass("oi-menu oi-x");
-    });
     
     // adding html from desktop main nav to sm navabar
     jQuery('.sm-navbar ul').html(jQuery('.lg-main-nav ul').html());
@@ -28467,8 +28462,21 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         showInline: true,
         start: 1
     });
+    // marquee
+    $('.marquee-line').marquee({
+        //speed in milliseconds of the marquee
+        duration: 8000,
+        //gap in pixels between the tickers
+        gap: 50,
+        //time in milliseconds before the marquee will start animating
+        delayBeforeStart: 0,
+        //'left' or 'right'
+        direction: 'left',
+        //true or false - should the marquee be duplicated to show an effect of continues flow
+        duplicated: true
+    });
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(1)))
 
 /***/ }),
 /* 145 */

@@ -100,7 +100,7 @@ function mptc_cat_listing($name = 'category')
  * @param [type] $youtube_video_url
  * @return void
  */
-function GetVideo_ID($youtube_video_url) 
+function GetVideo_ID($youtube_video_url)
 {
     /**
     * ប្រភេទ Links ដែលហ្នឹងអាចទទួល
@@ -116,12 +116,12 @@ function GetVideo_ID($youtube_video_url)
     * http://www.youtube.com/?feature=player_embedded&v=ID
     */
     /** Pattern ដែលដំណើរការ */
-    /* $pattern = 
-        '%                 
+    /* $pattern =
+        '%
         (?:youtube                    # Match any youtube url www or no www , https or no https
         (?:-nocookie)?\.com/          # allows for the nocookie version too.
         (?:[^/]+/.+/                  # Once we have that, find the slashes
-        |(?:v|e(?:mbed)?)/|.*[?&]v=)  # Check if its a video or if embed 
+        |(?:v|e(?:mbed)?)/|.*[?&]v=)  # Check if its a video or if embed
         |youtu\.be/)                  # Allow short URLs
         ([^"&?/ ]{11})                # Once its found check that its 11 chars.
         %i'; */
@@ -139,7 +139,7 @@ function GetVideo_ID($youtube_video_url)
  * @param [type] $vdo_link
  * @return void
  */
-function mptc_video_frame( $vdo_link )
+function mptc_video_frame($vdo_link)
 {
     $vdo_id = GetVideo_ID($vdo_link);
     $render = '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/' . $vdo_id . '" frameborder="0" allowfullscreen=""></iframe>';
