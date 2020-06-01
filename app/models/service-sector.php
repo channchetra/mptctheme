@@ -4,7 +4,7 @@ return [
     'type' => 'cat',
     'name' => 'sector',
     'links' => [
-        'service',
+        'service','ticker'
     ],
     'labels' => [
         'has_one' => 'Sector',
