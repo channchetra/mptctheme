@@ -56,7 +56,20 @@ class Breadcrumbs extends Controller
      
         return $list;
     }
-
+    private static function getCustomTermsList($taxonomy)
+    {
+        global $post;
+        $list = '';
+        $term = wp_get_post_terms($post->ID, $taxonomy, array( "fields" => "ids" )); // getting the term IDs
+        if ($term) {
+            $term_array = trim(implode(',', (array) $term), ' ,');
+            $neworderterms = get_terms($taxonomy, 'orderby=none&include=' . $term_array);
+            foreach ($neworderterms as $orderterm) {
+                $list .= '<li><a href="' . get_term_link($orderterm) . '">' . $orderterm->name . '</a></li>';
+            }
+        }
+        return $list;
+    }
 
     // Method ដំណើរការបង្កើត Breadcrumbs
     public static function mptcBreadcrumbs()
@@ -100,10 +113,12 @@ class Breadcrumbs extends Controller
                 $cat = get_the_category();
                 $cat = $cat[0];
                 $breadcrumb_output .= self::getTermParentsList($cat, 'category');
-            } elseif (is_singular(['service', 'book']) && !is_attachment()) {
-                $the_term_id = wp_get_post_terms($post->ID, 'sector', array( "fields" => "ids" ));
-                $breadcrumb_output .= self::getTermParentsList($the_term_id, 'sector');
-                $breadcrumb_output .= 'Hello Terming';
+            } elseif (is_singular() && !is_page()) {
+                // $the_term_id = wp_get_post_terms($post->ID, 'sector', array( "fields" => "ids" ));
+                $breadcrumb_output .= '<li><a href="#">';
+                $breadcrumb_output .= __('សេវាសាធារណៈ', 'sage');
+                $breadcrumb_output .= '</a></li>';
+                $breadcrumb_output .= self::getCustomTermsList('service-sector');
             } elseif (is_attachment()) {
                 $parent = get_post($post->post_parent);
                 $cat = get_the_category($parent->ID);
@@ -127,8 +142,8 @@ class Breadcrumbs extends Controller
                 $breadcrumb_output .= '<li><a href="#">' . get_the_title() . '</a></li>';
             } elseif (is_search()) {
                 $breadcrumb_output .= '<li>';
-                $breadcrumb_output .= __('លទ្ធផលស្វែងរកនៃពាក្យ៖ ', 'sage');
-                $breadcrumb_output .= get_search_query();
+                $breadcrumb_output .= __('លទ្ធផលស្វែងរកនៃពាក្យ ', 'sage');
+                $breadcrumb_output .= '«' .get_search_query() . '»&nbsp;';
                 $breadcrumb_output .= '</li>';
             } elseif (is_tag()) {
                 $breadcrumb_output .= '<li>';
@@ -147,7 +162,7 @@ class Breadcrumbs extends Controller
             
             if (get_query_var('paged')) {
                 $breadcrumb_output .= '<li>';
-                $breadcrumb_output .= __('ទំព័រទី៖', 'sage') . ' ' . get_query_var('paged');
+                $breadcrumb_output .= __(' ទំព័រទី៖', 'sage') . ' ' . get_query_var('paged');
                 $breadcrumb_output .= '</li>';
             }
                 $breadcrumb_output .= '</ul>';

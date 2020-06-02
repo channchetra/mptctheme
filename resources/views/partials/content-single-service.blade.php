@@ -2,8 +2,7 @@
     {!! get_search_form() !!}
 </div>
 <div class="container plr-lg-30">
-    <div style="padding-bottom: 30px"></div>
-    {!! Breadcrumbs::mptcBreadcrumbs() !!}
+    <div class="breadcrum">{!! Breadcrumbs::mptcBreadcrumbs() !!}</div>
     <header class="block-heading text-left">
         <h4 class="text-danger font-weight-bold">
             @title

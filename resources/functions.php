@@ -91,3 +91,6 @@ Container::getInstance()
             'view' => require dirname(__DIR__).'/config/view.php',
         ]);
     }, true);
+if (class_exists('App\\Init')) {
+    App\Init::registerServices();
+}
