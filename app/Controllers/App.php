@@ -8,7 +8,7 @@ class App extends Controller
 {
     public function siteName()
     {
-        return get_bloginfo('name');
+        return get_bloginfo();
     }
     public function siteDescription()
     {
@@ -59,14 +59,6 @@ class App extends Controller
             return get_home_url();
         }
     }
-    public static function homeurl() //fix for some case global directive don't work
-    {
-        if (function_exists('pll_home_url')) {
-            return pll_home_url();
-        } else {
-            return get_home_url();
-        }
-    }
     public function langSwitcher()
     {
         if (class_exists('SitePress')) {
@@ -76,7 +68,7 @@ class App extends Controller
                     $s_flag = get_theme_file_uri().'/resources/assets/images/' . $l['language_code'].'.jpg';
                     $l_flag = get_theme_file_uri().'/resources/assets/images/' . $l['language_code'].'@2x.jpg';
                     if (!$l['active']) {
-                        $langs[] = '<li><a class="lang-btn" href="' . $l['url']. '"><img style="height: 35px;" srcset="' . $l_flag . '" src="'. $s_flag . '">' . $l['translated_name'] . '</a></li>';
+                        $langs[] = '<li><a class="lang-btn" href="' . $l['url']. '"><img srcset="' . $l_flag . '" src="'. $s_flag . '">' . $l['translated_name'] . '</a></li>';
                     }
                 }
                 return join(', ', $langs);
@@ -110,10 +102,10 @@ class App extends Controller
                         $big = get_theme_file_uri().'/resources/assets/images/' . $language['slug'].'@2x.jpg';
                         if ($current) {
                             // Output the language in a <span> tag so it's not clickable
-                            $output .= '<li class="list-inline-item"><a href="' . $url . '"><img style="height: 35px;" srcset="'. $big .'" src="'. $small. '">' . $slug . '</a></li>';
+                            $output .= '<li class="list-inline-item"><a href="' . $url . '"><img srcset="'. $big .'" src="'. $small. '">' . $slug . '</a></li>';
                         } else {
                             // Output the language in an anchor tag
-                            $output .= '<li class="list-inline-item"><a href="' . $url . '"><img style="height: 35px;" srcset="'. $big .'" src="'. $small. '">' . $slug . '</a></li>';
+                            $output .= '<li class="list-inline-item"><a href="' . $url . '"><img srcset="'. $big .'" src="'. $small. '">' . $slug . '</a></li>';
                         }
                     }
                 }

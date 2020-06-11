@@ -10,6 +10,9 @@
             {!! get_search_form() !!}
           </div>
         </div>
+        @php
+            App\mptc_track_post_views(get_the_ID());
+        @endphp
         @include('partials.breadcrum')
         <div class="content">
           <div class="container plr-lg-30">

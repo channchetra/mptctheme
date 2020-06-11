@@ -222,7 +222,15 @@ function mptc_download_view()
     * _mptc_document_file ជា custom meta key ដែលកើតមាននៅពេល Active MPTC Field Plugin
     * ត្រូវបន្ថែម Upload Directory ទៅកាន់ Link ជាមុន (សម្រាប់ទិន្នន័យពី Website ចាស់)
     */
-    strpos($document, $url) !== false ? $d_link = $document : $d_link = $upload_url['baseurl'].'/'.$document;
+    if(strpos($document, $url) != false){
+        $d_link = $document;
+    }elseif(strpos($document, 'http://files') == 0){
+        $new_doc = preg_replace('#http://(files\.)?#i', '', $document);
+        $d_link = $upload_url['baseurl'].'/'. $new_doc;
+    }else{
+        $d_link = $upload_url['baseurl'].'/'. $document;
+    }
+    // strpos($document, $url) !== false ? $d_link = $document : $d_link = $upload_url['baseurl'].'/'.$document;
     if (!empty($document)) {
         $render_d = '<a href="'. $d_link . '"><span class="oi oi-cloud-download"></span>%s </a>';
         printf($render_d, __('ទាញយក', 'sage'));

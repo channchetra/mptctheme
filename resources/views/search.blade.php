@@ -9,7 +9,7 @@
     </div>
     {!! get_search_form() !!}
   @endif
-  <div class="b-2">
+  <div class="b-2 match-search" data-match="{{ the_search_query() }}">
     @while(have_posts()) @php the_post() @endphp
       @include('partials.content-search')
     @endwhile

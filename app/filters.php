@@ -123,7 +123,16 @@ add_filter('the_content', function ($doc_content) {
     * _mptc_document_file ជា custom meta key ដែលកើតមាននៅពេល Active MPTC Field Plugin
     * ត្រូវបន្ថែម Upload Directory ទៅកាន់ Link ជាមុន (សម្រាប់ទិន្នន័យពី Website ចាស់)
     */
-    strpos($document, $url) !== false ? $d_link = $document : $d_link = $upload_url['baseurl'].'/'.$document;
+    if(strpos($document, $url) != false){
+        $d_link = $document;
+    }elseif(strpos($document, 'http://files') == 0){
+        $new_doc = preg_replace('#http://(files\.)?#i', '', $document);
+        $d_link = $upload_url['baseurl'].'/'. $new_doc;
+    }else{
+        $d_link = $upload_url['baseurl'].'/'. $document;
+    }
+    // strpos($document, $url) !== false ? $d_link = $document : $d_link = $upload_url['baseurl'].'/'. $document;
+
     if (!empty($document)) {
         $doc_content .= '<iframe width="100%" height="1000" style="border: none;" src="https://docs.google.com/viewer?url=' . $d_link . '&amp;embedded=true"></iframe>';
     }
@@ -138,3 +147,7 @@ function ng_shortcode_spantag($attr, $content)
 {
     return '<span>'. $content . '</span>';
 }
+add_filter('kses_allowed_protocols', function($protocols) {
+    $protocols[] = 'ionic';
+    return $protocols;
+});

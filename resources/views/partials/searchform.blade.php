@@ -1,5 +1,9 @@
 <div class="form-search without-slideshow py-4 px-4 mb-0">
-    <form action="{!! App::homeurl() !!}" method="get">
+    <form @if ( function_exists( 'pll_home_url' ) )
+            action="{{ pll_home_url() }}"
+        @else
+            action="{{ home_url() }}"
+        @endif method="get">
         <div class="input-field input-group">
             <input type="search" class="text-field form-control" placeholder="{{
                 esc_attr_e('ស្វែងរក', 'sage')

@@ -24,3 +24,9 @@
 @import "layouts/posts";
 @import "layouts/tinymce";
 @import "~mptchtml/dist/main.css";
+
+.small-img .b-4 ul li img {
+  display: inline-block;
+  width: 3.5em;
+  margin-bottom: 15px;
+}

@@ -2,12 +2,16 @@
 <div class="content">
   <!-- mobile header -->
   <div class="sm-header d-md-block d-lg-none">
-    <a href="{{ $ptc_home_url }}" class="sm-logo inline-block vertical-align-middle py-2">
-      <img src="{{ $logo_url }}" />
-    </a>
-    <div class="sm-title inline-block vertical-align-middle primary-color">
-      <h1 class="font-moul">{{ $site_name }}</h1>
-      <small>{{ $site_description }}</small>
+    <div class="text-center site-name-sm mb-3">
+      <div class="logo">
+        <a href="{{ $ptc_home_url }}" class="sm-logo inline-block vertical-align-middle py-2">
+          <img src="{{ $logo_url }}" />
+        </a>
+      </div>
+      <div class="sm-title inline-block vertical-align-middle primary-color">
+        <h1 class="font-moul">{{ $site_name }}</h1>
+        <small>{{ $site_description }}</small>
+      </div>
     </div>
     <div class="nav-button vertical-align-middle">
       <div class="languages d-inline-block text-center">
@@ -30,7 +34,7 @@
             <img src="{{ $logo_url }}" />
           </a>
           <div class="lg-title inline-block vertical-align-middle primary-color">
-            <h1 class="font-moul">{{ $site_name }}</h1>
+            <h1 class="font-moul">{{ get_bloginfo('name') }}</h1>
             <span>{{ $site_description }}</span>
           </div>
         </div>
