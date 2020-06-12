@@ -145,3 +145,26 @@ function mptc_video_frame($vdo_link)
     $render = '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/' . $vdo_id . '" frameborder="0" allowfullscreen=""></iframe>';
     return $render;
 }
+function sh_set_youtube_as_featured_image() {
+// only want to do this if the post has no thumbnail
+    if(!has_post_thumbnail(get_the_ID())) {
+        // find the youtube url from post contents
+        $post_array = get_post(get_the_ID(), ARRAY_A);
+        $content = $post_array['post_content'];
+        $video_link = get_post_meta(get_the_ID(), '_mptc_video_url', true);
+        $vdo_id = GetVideo_ID($video_link);
+        $youtube_thumb_url = 'https://img.youtube.com/vi/' . $vdo_id . '/maxresdefault.jpg'; // next, download the URL of the youtube image 
+        media_sideload_image($youtube_thumb_url, get_the_ID(), 'Video thumbnail.'); 
+        // find the most recent attachment for the given post 
+        $attachments = get_posts( array( 'post_type' => 'attachment',
+                'numberposts' => 1,
+                'order' => 'ASC',
+                'post_parent' => get_the_ID()
+            )
+        );
+        $attachment = $attachments[0];
+        // and set it as the post thumbnail
+        set_post_thumbnail( get_the_ID(), $attachment->ID );
+    } // end if
+} // set_youtube_as_featured_image
+add_action('save_post', 'sh_set_youtube_as_featured_image');

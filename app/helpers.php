@@ -222,7 +222,7 @@ function mptc_download_view()
     * _mptc_document_file ជា custom meta key ដែលកើតមាននៅពេល Active MPTC Field Plugin
     * ត្រូវបន្ថែម Upload Directory ទៅកាន់ Link ជាមុន (សម្រាប់ទិន្នន័យពី Website ចាស់)
     */
-    if(strpos($document, $url) != false){
+    if(strpos($document, $url) !== false){
         $d_link = $document;
     }elseif(strpos($document, 'http://files') == 0){
         $new_doc = preg_replace('#http://(files\.)?#i', '', $document);
